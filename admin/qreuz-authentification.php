@@ -99,53 +99,54 @@ class Qreuz_Authentification {
 			
 		} else {
 
-			$toqen        = sanitize_text_field( $_POST['qreuz_userdata_toqen'] );
+			$token        = sanitize_text_field( $_POST['qreuz_userdata_toqen'] );
 			$current_time = sanitize_text_field( $_POST['qreuz_current_time'] );
 			$form         = sanitize_text_field( $_POST['form'] );
 
-			$email = get_option( 'qreuz_userdata_email' );
+			$requester_data = new Qreuz_Tracking_Datapoints();
 
-			if ( ! $email ) {
+			$auth_requester_data = array();
+
+			$auth_requester_data['form']      = $form;
+			$auth_requester_data['toqen']     = $token;
+			$auth_requester_data['ua']        = $requester_data->qreuz_tdp_user_agent();
+			$auth_requester_data['ip']        = $requester_data->qreuz_tdp_server_ip();
+			$auth_requester_data['url']       = $requester_data->qreuz_tdp_url( 'pure' );
+			$auth_requester_data['timestamp'] = $current_time;
+			$auth_requester_data['new']       = '';
+
+			$response = (string) $this->do_auth_request( 'https://auth.qreuz.com', $auth_requester_data );
+
+			$response = json_decode( $response, true );
+
+			if ( $response[ 'success' ] ) {
+				update_option( 'qreuz_userdata_toqen', $token );
+				update_option( 'qreuz_userdata_authentification', '1' );
+				update_option( 'qreuz_userdata_qkey', $response[ 'qkey' ] );
+				update_option( 'qreuz_smart_tracking_active', 'on' );
+
+				wp_die( json_encode( $response ) );
+			}
+
+			/** push integration settings if present 
+
+			$integrations['ga_property_id'] = ( false === get_option( 'qreuz_ti_ga_property_id' ) ? '' :  get_option( 'qreuz_ti_ga_property_id' ) );
+			$integrations['fb_pixel_id'] = ( false === get_option( 'qreuz_ti_fb_pixel_id' ) ? '' :  get_option( 'qreuz_ti_fb_pixel_id' ) );
+			$integrations['bing_uet_id'] = ( false === get_option( 'qreuz_ti_bing_uet_id' ) ? '' :  get_option( 'qreuz_ti_bing_uet_id' ) );
+			$integrations['gmerch_id'] = ( false === get_option( 'qreuz_ti_gmerch_id' ) ? '' :  get_option( 'qreuz_ti_gmerch_id' ) );
+
+			$settings_response = $this->update_settings( 'update_settings_integrations', $integrations, $current_time );
+			*/
+			if ( 'userdata-updated' === $settings_response ) {
+
+				echo esc_html( $response );
 				wp_die();
+
 			} else {
-				
-				$requester_data = new Qreuz_Tracking_Datapoints();
 
-				$auth_requester_data = array();
+				echo esc_html('error');
+				wp_die();
 
-				$auth_requester_data['form']      = $form;
-				$auth_requester_data['email']     = $email;
-				$auth_requester_data['toqen']     = $toqen;
-				$auth_requester_data['ua']        = $requester_data->qreuz_tdp_user_agent();
-				$auth_requester_data['ip']        = $requester_data->qreuz_tdp_server_ip();
-				$auth_requester_data['url']       = $requester_data->qreuz_tdp_url( 'pure' );
-				$auth_requester_data['timestamp'] = $current_time;
-				$auth_requester_data['new']       = '';
-
-				$response = (string) $this->do_auth_request( 'https://auth.qreuz.com', $auth_requester_data );
-
-				update_option( 'qreuz_userdata_toqen', $toqen );
-
-				/** push integration settings if present */
-
-				$integrations['ga_property_id'] = ( false === get_option( 'qreuz_ti_ga_property_id' ) ? '' :  get_option( 'qreuz_ti_ga_property_id' ) );
-				$integrations['fb_pixel_id'] = ( false === get_option( 'qreuz_ti_fb_pixel_id' ) ? '' :  get_option( 'qreuz_ti_fb_pixel_id' ) );
-				$integrations['bing_uet_id'] = ( false === get_option( 'qreuz_ti_bing_uet_id' ) ? '' :  get_option( 'qreuz_ti_bing_uet_id' ) );
-				$integrations['gmerch_id'] = ( false === get_option( 'qreuz_ti_gmerch_id' ) ? '' :  get_option( 'qreuz_ti_gmerch_id' ) );
-
-				$settings_response = $this->update_settings( 'update_settings_integrations', $integrations, $current_time );
-
-				if ( 'userdata-updated' === $settings_response ) {
-
-					echo esc_html( $response );
-					wp_die();
-
-				} else {
-
-					echo esc_html('error');
-					wp_die();
-
-				}
 			}
 		}
 	}
@@ -162,8 +163,7 @@ class Qreuz_Authentification {
 			
 		} else {
 
-			update_option( 'qreuz_userdata_authentification', '1' );
-			update_option( 'qreuz_smart_tracking_active', 'on' );
+			
 
 			$response = 'success';
 			echo esc_html( $response );

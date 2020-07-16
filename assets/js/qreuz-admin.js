@@ -80,32 +80,21 @@ jQuery(document).ready(function($){
 			'_wp_http_referer' : $('.qreuz-wrapper #qreuz_authentification_toqen input[name=_wp_http_referer]').val(),
 			'form' : $('.qreuz-wrapper #qreuz_authentification_toqen input[name=form]').val(),
 		};
-        $.post(ajaxurl, data, function(response) {
-            if(response == 'toqen-stored'){
-				var successdata = {
-					'action': 'qreuz_authentification_toqen_successful',
-					'_wpnonce' : $('.qreuz-wrapper #qreuz_authentification_toqen input[name=_wpnonce]').val(),
-					'_wp_http_referer' : $('.qreuz-wrapper #qreuz_authentification_toqen input[name=_wp_http_referer]').val(),
-				};
-				$.post(ajaxurl, successdata, function(auth_logged) {
-					if (auth_logged == 'success') {
-						$('.qreuz-wrapper #qreuz_authentification_toqen input[type="submit"]').prop('disabled', true).attr('value','Success.');
-						$('.qreuz-wrapper #qreuz_authentification_toqen input[name=qreuz_userdata_toqen]').prop('disabled', true);
-						$('.qreuz-wrapper #qreuz_authentification_toqen #success').removeClass('hidden').text('\u2714 Connected');
-					} else {
-						$('.qreuz-wrapper #qreuz_authentification_toqen input[type="submit"]').attr('value','Error2.').removeClass('button-primary').addClass('qr-btn-red');
-					}
-				});
-               
-            } else {
-                $('.qreuz-wrapper #qreuz_authentification_toqen input[type="submit"]').attr('value','Error.').removeClass('button-primary').addClass('qr-btn-red');
-            }
+        $.post(ajaxurl, data, function(resp_json) {
+			var response = jQuery.parseJSON(resp_json);
+            if(response.success == 'true'){
+				$('.qreuz-wrapper #qreuz_authentification_toqen input[type="submit"]').prop('disabled', true).attr('value','Success.');
+				$('.qreuz-wrapper #qreuz_authentification_toqen input[name=qreuz_userdata_toqen]').prop('disabled', true);
+				$('.qreuz-wrapper #qreuz_authentification_toqen #success').removeClass('hidden').text('\u2714 Connected');
+			} else {
+				$('.qreuz-wrapper #qreuz_authentification_toqen input[type="submit"]').attr('value','Error.').removeClass('button-primary').addClass('qr-btn-red');
+			}
         });
 	});
 
 	/** AJAX handler for: Logged in info visible */
 	if ( $('.qreuz-wrapper #qreuz_logged_in_info').length > 0 ) {
-		$('.qreuz-wrapper #qreuz_logged_in_info').prepend('\u2714 You are logged in as ').append('<br /><a id="qreuz_change_creds" class="qreuz_logout">Change credentials</a> | <a id="qreuz_logout" class="qreuz_logout">Logout</a>');
+		$('.qreuz-wrapper #qreuz_logged_in_info').prepend('\u2714 Connection to Qreuz active.').append('<br /><a id="qreuz_logout" class="qreuz_logout">Disconnect</a>');
 		$('.qreuz-wrapper #qreuz_authentification_email input[name=qreuz_userdata_email]').prop('disabled', true);
 		$('.qreuz-wrapper #qreuz_authentification_email input[type="submit"]').prop('disabled', true);
 		$('.qreuz-wrapper #qreuz_authentification_toqen input[type="submit"]').prop('disabled', true);
@@ -144,7 +133,7 @@ jQuery(document).ready(function($){
 
 	/** AJAX handler for: Login required */
 	if ( $('.qreuz-wrapper #qreuz_logged_in_required').length > 0 ) {
-		$('.qreuz-wrapper #qreuz_logged_in_required').prepend('\u26A0 Please log in into your Qreuz user account before changing these settings. <br />').append('<br />');
+		$('.qreuz-wrapper #qreuz_logged_in_required').prepend('\u26A0 You must authenticate with your Qreuz account to access this feature. <br />').append('<br />');
 		$('.qreuz-wrapper .qreuz_smart_tracking_form input').prop('disabled', true);
 		$('.qreuz-wrapper .qreuz_smart_tracking_form').addClass('disabled');
 		$('.qreuz-wrapper #qreuz_smart_tracking').addClass('disabled');

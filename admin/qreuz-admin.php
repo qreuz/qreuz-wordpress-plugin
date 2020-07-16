@@ -284,6 +284,7 @@ class Qreuz_Admin {
 			register_setting( 'qreuz_tracking_integrations', 'qreuz_ti_gmerch_id' );
 			/** settings for userdata */
 			register_setting( 'qreuz_userdata', 'qreuz_userdata_toqen' );
+			register_setting( 'qreuz_userdata', 'qreuz_userdata_qkey' );
 			register_setting( 'qreuz_userdata', 'qreuz_userdata_email' );
 			register_setting( 'qreuz_userdata', 'qreuz_userdata_authentification' );
 		}

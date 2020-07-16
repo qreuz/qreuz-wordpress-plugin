@@ -83,9 +83,9 @@ class Qreuz_Tracker {
 
 	public function qreuz_tracker_push( $tracking_data ) {
 
-		$toqen = get_option( 'qreuz_userdata_toqen' );
+		$qkey = get_option( 'qreuz_userdata_qkey' );
 
-		if ( false !== $toqen && 5 < strlen( $toqen ) ) {
+		if ( false !== $qkey && 5 < strlen( $qkey ) ) {
 
 			$tracking_data_encoded = $this->parameter_url_encoding( $tracking_data );
 
@@ -97,7 +97,7 @@ class Qreuz_Tracker {
 				}
 			}
 
-			$tracking_url = array( 'https://ping.qreuz.com/?v=1&toqen=' . $toqen );
+			$tracking_url = array( 'https://ping.qreuz.com/?v=1&qkey=' . $qkey );
 			foreach ( $tracking_url as $tracker_url ) {
 					$this->do_request( $tracker_url . $tracking_request_parameter, $tracking_data_encoded['qua'] );
 			}

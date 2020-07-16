@@ -101,61 +101,23 @@ class Qreuz_Admin_Tabs {
 	 * @return void
 	 */
 	private function load_page_start() {
-		
-		/**
-		 * Field: Email
-		 */
 
 		echo '<div class="qreuz_admin_section qreuz_admin_section_login">';
-		echo '<h2>Login / Signup</h2>';
+		echo '<h2>Connect your Qreuz account</h2>';
 
 		/** row: already logged in */
 
-		if ( is_email( get_option( 'qreuz_userdata_email' ) ) && '1' === get_option( 'qreuz_userdata_authentification' ) ) {
-
-			$email = get_option( 'qreuz_userdata_email' );
+		if ( '1' === get_option( 'qreuz_userdata_authentification' ) ) {
 			
-			echo '<p id="qreuz_logged_in_info">';
-			echo '<b>' . $email . '</b>';
-			echo '</p>';
+			echo '<p id="qreuz_logged_in_info"></p>';
 
 		}
-
-		echo '<form action="" method="POST" enctype="multipart/form-data" id="qreuz_authentification_email">';
-
-		echo '<input type="hidden" name="form" id="form" value="auth_email" />';
-		wp_nonce_field( 'qreuz_authentification_email' );
-
-		echo '<table>';
-
-		echo '<tr>';
-		echo '<td id="qreuz_login_preinfo">';
-		echo '<p>';
-		echo 'Enter your email address and request your access toqen to login or to create a <b>free</b> account.';
-		echo '</p>';
-		echo '<p id="qreuz_privacy_email">';
-		echo 'Your email address entered here will be used to send you a single email with instructions to get your access toqen.';
-		echo '</p>';
-		echo '</td>';
-		echo '</tr>';
-
-		/** row: email */
-		echo '<tr>';
-		echo '<td>';
-		echo '<input type="text" name="qreuz_userdata_email" value="' . esc_attr( get_option( 'qreuz_userdata_email' ) ) . '" placeholder="Enter your email" />';
-		submit_button( __( 'Request Toqen', 'qreuz' ) );
-		echo '<p id="success" class="hidden"></p>';
-		echo '</td></tr>';
-
-		echo '</table>';
-		
-		echo '</form>';
 
 		/**
 		 * Field: Toqen
 		 */
 
-		$toqen_disabled_class = ( get_option( 'qreuz_userdata_email' ) ? '' : 'disabled' );
+		$toqen_disabled_class = ( ! get_option( 'qreuz_userdata_toqen' ) ? '' : 'disabled' );
 
 		echo '<form action="" method="POST" enctype="multipart/form-data" id="qreuz_authentification_toqen" class="' . $toqen_disabled_class . '">';
 
@@ -167,8 +129,8 @@ class Qreuz_Admin_Tabs {
 		/** row: toqen */
 		echo '<tr>';
 		echo '<td>';
-		echo '<input type="text" name="qreuz_userdata_toqen" value="' . esc_attr( get_option( 'qreuz_userdata_toqen' ) ) . '" placeholder="Enter your toqen" />';
-		submit_button( __( 'Save Toqen', 'qreuz' ) );
+		echo '<input type="text" name="qreuz_userdata_toqen" value="' . esc_attr( get_option( 'qreuz_userdata_toqen' ) ) . '" placeholder="Enter your access token" />';
+		submit_button( __( 'Save Token', 'qreuz' ) );
 		echo '<p id="success" class="hidden"></p>';
 		echo '</td></tr>';
 
@@ -376,9 +338,9 @@ class Qreuz_Admin_Tabs {
 
 			$baseurl = remove_query_arg( 'notice', esc_url_raw( $_SERVER['REQUEST_URI'] ) );
 			
-
 			echo '<p id="qreuz_logged_in_required">';
-			echo '<a href="' . esc_attr( add_query_arg( 'page', 'qreuz', $baseurl ) ) . '" class="qreuz_to_login">Create a free account and login now!</a>';
+			echo '<a href="' . esc_attr( add_query_arg( 'page', 'qreuz', $baseurl ) ) . '" class="qreuz_to_login">Click here to authenticate.</a><br /><br />';
+			echo '<a href="https://qreuz.com/account" target="_blank">No account yet? Get started now!</a>';
 			echo '</p>';
 
 		}
@@ -421,73 +383,6 @@ class Qreuz_Admin_Tabs {
 		submit_button();
 		echo '</form>';
 
-		/**
-		 * Integration settings
-		 */
-		echo '<h2>Integration settings</h2>';
-		echo '<form method="POST" action="" enctype="multipart/form-data" id="qreuz_smart_tracking_integrations" class="qreuz_smart_tracking_form">';
-		
-		echo '<input type="hidden" name="form" id="form" value="update_settings_integrations" />';
-		wp_nonce_field( 'qreuz_smart_tracking_integrations' );
-
-		echo '<table class="form-table qreuz_admin_settings_table">';
-		echo '<tbody>';
-
-		/**
-		 * row for: GA Property ID
-		 */
-		echo '<tr>';
-		echo '<th scope="row">Google Analytics Property ID</th>';
-		echo '<td>';
-		Qreuz_Admin::load_helptip(
-			'Enter your Google Analytics property ID to activate the integration with Google Analytics.'
-		);
-		echo '<input type="text" name="qreuz_ti_ga_property_id" value="' . esc_attr( get_option( 'qreuz_ti_ga_property_id' ) ) . '" />';
-		echo '</td></tr>';
-
-		/**
-		 * row for: Facebook Pixel ID
-		 */
-		echo '<tr>';
-		echo '<th scope="row">Facebook Pixel ID</th>';
-		echo '<td>';
-		Qreuz_Admin::load_helptip(
-			'Enter your Facebook Pixel ID to activate the integration with Facebook Ads.'
-		);
-		echo '<input type="text" name="qreuz_ti_fb_pixel_id" value="' . esc_attr( get_option( 'qreuz_ti_fb_pixel_id' ) ) . '" />';
-		echo '</td></tr>';
-
-		/**
-		 * row for: Bing UET ID
-		 */
-		echo '<tr>';
-		echo '<th scope="row">Bing Ads UET Tag ID</th>';
-		echo '<td>';
-		Qreuz_Admin::load_helptip(
-			'Enter your Bing Ads UET tag ID to activate the integration with Bing Ads.'
-		);
-		echo '<input type="text" name="qreuz_ti_bing_uet_id" value="' . esc_attr( get_option( 'qreuz_ti_bing_uet_id' ) ) . '" />';
-		echo '</td></tr>';
-
-		/**
-		 * row for: Google Merchant Center ID
-		 */
-		echo '<tr>';
-		echo '<th scope="row">Google Merchant Center ID</th>';
-		echo '<td>';
-		Qreuz_Admin::load_helptip(
-			'Enter your Googlel Merchant Center ID to activate the integration with Google Merchant Center.'
-		);
-		echo '<input type="text" name="qreuz_ti_gmerch_id" value="' . esc_attr( get_option( 'qreuz_ti_gmerch_id' ) ) . '" />';
-		echo '</td></tr>';
-
-		echo '</table>';
-
-		submit_button();
-		
-		echo '<p id="success" class="hidden"></p>';
-
-		echo '</form>';
 		echo '</div>'; // close qreuz_admin_section
 
 	}
@@ -597,7 +492,7 @@ class Qreuz_Admin_Tabs {
 			case 'qreuz_menu_smart_tracking':
 				$content = '<h3>Qreuz Smart Tracking</h3><p>Qreuz Smart Tracking helps you to analyze user behavior on your Wordpress Website.</p>
 				<p>This tracking can replace other integrations with tracking providers and works <b>without cookies</b>.</p>
-				<p>Enter the IDs of other tracking tools to activate the integration with them. An anonymized copy of your recorded data will then be forwarded to those third-party tracking providers.</p>
+				<p>Activate and manage your integrations directly from your <a href="https://qreuz.com/account/" target="_blank">Qreuz user account</a>.</p>
 				<h3>Features</h3>
 				<ul class="qreuz_admin_features">
 					
@@ -636,8 +531,9 @@ class Qreuz_Admin_Tabs {
 				break;
 			default:
 				$content = '<h3>Qreuz</h3>
-				<p>Login for access to advanced tracking and automation features of this app.<br />
-				Enter your email address below to login with your existing profile or to create a <b>free</b> account
+				<p>Connect with your account at Qreuz for access to advanced tracking and automation features of this plugin.<br />
+				<h4>No account yet?</h4>
+				<a href="https://qreuz.com/account/" target="_blank"">Get started now!</a>
 				</p>';
 		}
 
