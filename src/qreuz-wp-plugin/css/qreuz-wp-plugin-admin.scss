@@ -1,0 +1,255 @@
+/** Qreuz plugin for WordPress.
+
+Copyright (C) 2020 by Qreuz GmbH <https://qreuz.com/legal-notice>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+**/
+
+/** Colors **/
+$backgroundColor01: #fafafa !default;
+$backgroundColor02: #ffffff !default;
+$white: #ffffff !default;
+$black: #000000 !default;
+$green01: #14b084 !default;
+$green02: #00cc99 !default;
+$green03: #00F2A9 !default;
+$green04: #00ffcc !default;
+$green05: #339999 !default;
+$grey01: #cccccc !default;
+$grey02: #999999 !default;
+$grey03: #666666 !default;
+$grey04: #333333 !default;
+$grey05: #f3f3f3 !default;
+$red01: #ff0000 !default;
+$yellow01: #fff000 !default;
+
+
+/** Admin styles */
+a {
+	text-decoration: none;
+}
+
+#adminmenu li.menu-top[class*="qreuz"] .wp-menu-image img {
+    width: 18px !important;
+}
+
+#adminmenu li.current[class*="qreuz"] a.menu-top[class*="qreuz"] {
+	background: $green01 !important;
+}
+#adminmenu li.wp-has-current-submenu[class*="qreuz"] a.wp-has-current-submenu[class*="qreuz"] {
+	background: $green01 !important;
+}
+
+.qreuz_admin_header h1 {
+	background-color: $green01;
+}
+.qreuz_admin_header h1 img {
+	width: 123px;
+	padding: .23em 1.23em;
+}
+.qreuz_admin_header h2 {
+	padding-top:1em;
+}
+.qreuz_admin_header div.postbox-header {
+	background-color: $green01;
+}
+.qreuz_admin_header div.postbox-header div.handle-actions button {
+	color: $grey05;
+}
+.qreuz_admin_header h2 span {
+	background-color: $green01;
+	color: $white;
+	padding: 0 1em;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+#qreuz_admin_footer {
+	margin-top: 4em;
+}
+.qreuz-notice {
+	margin: 5px 20px 2px 2px;
+}
+.qreuz_admin_pb_description {
+	border-radius: 5px;
+	background-color:#fff;
+	border: 1px solid#ccc;
+	padding: 1em;
+	margin-right: 20px;
+}
+.qreuz_admin_helptip span.dashicons {
+	font-size: 18px;
+	vertical-align: middle;
+	margin: 0 5px;
+}
+.qreuz_admin_unit {
+	margin-left:3px;
+}
+.qreuz_helptip_element_depr, .qreuz_helptip_element {
+	font-size: 11px;
+	border-radius: 5px;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+	-webkit-box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.2);
+	-moz-box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.2);
+	box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.2);
+	background-color:$grey04 !important;
+	background:$grey04 !important;
+	color: $white !important;
+}
+.qreuz_helptip_element_depr div, .qreuz_helptip_element div {
+	font-size: 11px;
+	color: $white;
+	background-color:$grey04 !important;
+	background: $grey04 !important;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+}
+
+#qreuz_meta_box h2.ui-sortable-handle span::before {
+	content: url(../svg/green_block.svg);
+	width: 11px;
+	display: inline-block;
+	margin: 0px 7px 0px 0;
+}
+#qreuz_meta_box .qreuz_admin_metabox_customerinsights span {
+	display: block;
+}
+#qreuz_meta_box .qreuz_admin_metabox_customerinsights .qreuz_admin_helptip {
+	display: inline-block;
+	margin-left: 3px;
+	font-size: 11px;
+}
+.qreuz_admin_section p.submit {
+	display:inline-block;
+	margin-left:1em;
+}
+.qreuz-wrapper .disabled {
+	opacity: 0.5;
+	filter:Alpha(opacity=50);
+}
+.qreuz_admin_section #success  {
+	display: inline-block;
+	margin-left: 1em;
+	color:$green01;
+}
+#qreuz_logged_in_info {
+	color:$green01;
+}
+#qreuz_login_preinfo {
+
+}
+#qreuz_privacy_email {
+	margin-top: 1em;
+	margin-bottom: -1em;
+	font-size: 80%;
+}
+.qreuz_logout {
+	text-decoration:underline;
+	cursor:pointer;
+}
+.qreuz_admin_section_login .hidden {
+	display:none !important;
+}
+ul.qreuz_admin_features {
+	list-style: square inside;
+}
+ul.qreuz_admin_features ul {
+	margin-left:1.2em;
+	margin-top:0.4em;
+}
+#qreuz_logged_in_required {
+	padding: 1em;
+	background-color: $grey05;
+	border: 3px dashed $red01;
+	border-radius: 5px;
+	margin: 2em 0.5em;
+	font-weight: 700;
+}
+
+/** Qreuz Dashboard Widget Styles */
+
+#qreuz_admin_widget a {
+	text-decoration:none !important;
+}
+#qreuz_admin_widget div.postbox-header {
+	background-color:$green01 !important;
+	color:$white !important;
+}
+#qreuz_admin_widget h2 {
+	background-color:$green01 !important;
+	color:$white !important;
+	font-weight:bold !important;
+	text-transform:uppercase !important;
+}
+#qreuz_admin_widget .toggle-indicator {
+	color: $white !important;
+}
+#qreuz_admin_widget .order-higher-indicator {
+	color: $white !important;
+}
+#qreuz_admin_widget .order-lower-indicator {
+	color: $white !important;
+}
+
+#qreuz_admin_widget .inside {
+	padding: 0 !important;
+}
+
+.qreuz_admin_dashboard_widget {
+	padding: 0 12px 12px;
+}
+
+.qreuz_admin_dashboard_widget h3 {
+	border-top: 1px solid $grey05;
+	font-weight:bold !important;
+	padding-top: 1em !important;
+}
+
+.qreuz_admin_dashboard_widget h4 {
+	
+}
+
+.qreuz_admin_dashboard_widget .qreuz_admin_tag {
+	background-color:$green01;
+	color:$white;
+	font-size:75%;
+	border-radius:3px;
+	text-transform:uppercase;
+	padding: .2em .5em;
+	margin-right: .5em;
+}
+
+.qreuz_admin_dashboard_widget small {
+	font-weight:75%;
+	font-style: italic;
+}
+#qreuz_admin_dashboard_news p {
+	margin: .3em 0;
+	padding-bottom: 1em;
+}
+
+.qreuz_admin_dashboard_widget_footer {
+	padding: 0 12px;
+	border-top: 1px solid $grey05;
+}
+.qreuz_admin_dashboard_widget_footer li {
+	display: inline-block;
+	border-left: 1px solid $grey05;
+	margin-bottom:0;
+	padding: 0 .7em;
+}
+.qreuz_admin_dashboard_widget_footer li:first-child {
+	display: inline-block;
+	border:0 !important;
+	margin-bottom:0;
+	padding:0 .3em 0 0;
+}

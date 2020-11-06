@@ -1,0 +1,60 @@
+{
+  "name": "qreuz-wordpress-plugin",
+  "version": "1.5.0",
+  "description": "Source for JavaScript used in official Qreuz WordPress plugin",
+  "main": "qreuz-tracker.js",
+  "scripts": {
+    "build": "wp-scripts build",
+    "check-engines": "wp-scripts check-engines",
+    "check-licenses": "wp-scripts check-licenses",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "lint:pkg-json": "wp-scripts lint-pkg-json",
+    "start": "wp-scripts start",
+    "test:e2e": "wp-scripts test-e2e",
+    "test:unit": "wp-scripts test-unit-js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qreuz/qreuz-wordpress-plugin.git"
+  },
+  "keywords": [
+    "Qreuz",
+    "webtracking",
+    "Qreuz WordPress plugin"
+  ],
+  "author": "Qreuz GmbH",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/qreuz/qreuz-wordpress-plugin/issues"
+  },
+  "homepage": "https://github.com/qreuz/qreuz-wordpress-plugin#readme",
+  "devDependencies": {
+    "@svgr/webpack": "^5.4.0",
+    "@wordpress/browserslist-config": "^2.7.0",
+    "@wordpress/scripts": "^12.5.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "node-sass": "^4.14.1"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^0.1.0",
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
+    "lodash": "^4.17.19",
+    "qs": "^6.9.4",
+    "react-hook-form": "^6.2.0",
+    "react-router-dom": "^5.2.0",
+    "react-tooltip": "^4.2.7",
+    "yup": "^0.29.2"
+  },
+  "browserslist": [
+    "extends @wordpress/browserslist-config"
+  ],
+  "babel": {
+    "presets": [
+      "@wordpress/default"
+    ],
+    "plugins": []
+  }
+}
