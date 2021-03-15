@@ -1,9 +1,8 @@
 /**
  * Basic imports/reqs.
  * */
-const { render, useState } = wp.element;
+const { render } = wp.element;
 import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Route, Switch, Link, useRouteMatch, useParams } from 'react-router-dom';
 
 /**
  * Import custom components.
@@ -35,13 +34,15 @@ import '../css/qreuz-wp-plugin-admin.scss';
 function LoadModuleAdminPbContent(props) {
 
 	return(
-		<Suspense fallback={basicSuspense()}>
-			<GenericProvider {...props}>
-			<LocalProvider {...props}>
-				<ModuleAdminPbContent {...props} />
-			</LocalProvider>
-			</GenericProvider>
-		</Suspense>	
+		<React.Fragment>
+			<Suspense fallback={basicSuspense()}>
+				<GenericProvider {...props}>
+					<LocalProvider {...props}>
+						<ModuleAdminPbContent {...props} />
+					</LocalProvider>
+				</GenericProvider>
+			</Suspense>	
+		</React.Fragment>
 	)
 }
 if (document.getElementById('qreuz_admin_pb_content')) {

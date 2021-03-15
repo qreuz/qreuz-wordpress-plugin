@@ -30,9 +30,9 @@ class Qreuz_Tracker {
 	}
 
 	public function qreuz_track_pageview() {
-		
+
 		if ( ! check_ajax_referer( 'do-ajax-qtpv', '_wpnonce', false ) ) {
-			
+
 			wp_die( 'nonce_failed' );
 
 		} else {
@@ -53,7 +53,7 @@ class Qreuz_Tracker {
 
 		$this->tracking_parameters['qturl']  = ( isset( $url ) ? $url : Qreuz_Tracking_Datapoints::qreuz_tdp_url() );
 		$this->tracking_parameters['qua']    = Qreuz_Tracking_Datapoints::qreuz_tdp_user_agent();
-		
+
 		$uip = Qreuz_Tracking_Datapoints::qreuz_tdp_ip();
 
 		$this->tracking_parameters['quaip']   = $uip['aip'];
@@ -67,7 +67,7 @@ class Qreuz_Tracker {
 		 * collect all URL params and add them to tracking query
 		 */
 		$query_string = parse_url( $url, PHP_URL_QUERY );
-		
+
 		parse_str( $query_string, $query_params );
 		$query_params_keys = array_keys( $query_params );
 
@@ -105,10 +105,11 @@ class Qreuz_Tracker {
 	}
 
 	private function do_request( $url, $user_agent_string ) {
+
 		$response = wp_remote_post(
 			$url,
 			array(
-				'method'       => 'POST',
+				'method'       => 'GET',
 				'timeout'      => 2,
 				'httpdversion' => '1.0',
 				'blocking'     => false,

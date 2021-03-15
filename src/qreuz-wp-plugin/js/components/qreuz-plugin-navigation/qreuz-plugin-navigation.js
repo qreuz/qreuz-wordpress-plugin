@@ -3,7 +3,7 @@
  * */
 const { render, useState } = wp.element;
 import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Route, Switch, Link, useRouteMatch, useHistory, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Link, NavLink, useRouteMatch, useHistory, useLocation } from 'react-router-dom';
 var qs = require('qs');
 import PropTypes from 'prop-types';
 
@@ -53,14 +53,28 @@ export default function QreuzAdminNavigation(props) {
 	const { user, contextLoading } = React.useContext(
 		GenericContext
 	);
-	const { navigationPosition } = React.useContext(
-		LocalContext
-	);
 
 	/**
-	 * Local state.
+	 * Tab values.
 	 */
-	const [value, setValue] = React.useState(0);
+	function getUrlParam(param) {
+		var results = new RegExp('[\\?&]' + param + '=([^&#]*)').exec(window.location.href);
+		return (results && results[1]) || undefined;
+	}
+	const getNavigationPosition = () => {
+		/** Get navigation position from url parameter */
+		var paramNavPos = getUrlParam('subpage');
+
+		if( paramNavPos > "" ) {
+			/** Url parameter found - set navigation position accordingly */
+			return paramNavPos;
+		} else {
+			/** Url parameter not present - set standard navigation position */
+			return ('getstarted');
+		}
+	};
+
+	const [value, setValue] = React.useState(getNavigationPosition());
 
 	/**
 	 * Load local styles.
@@ -81,7 +95,7 @@ export default function QreuzAdminNavigation(props) {
 						<AppBar
 							position="static"
 							className={classes.qreuzNavigation}>
-							<Tabs value={navigationPosition} onChange={handleChange} aria-label="qreuz-plugin-navigation">
+							<Tabs value={value} onChange={handleChange} aria-label="qreuz-plugin-navigation">
 								<Tab label="Get started" value="getstarted" to="admin.php?page=qreuz&subpage=getstarted" component={Link} {...a11yProps('getstarted')} />
 								<Tab label="What is Qreuz?" value="whatisqreuz" to="admin.php?page=qreuz&subpage=whatisqreuz" component={Link} {...a11yProps('whatisqreuz')} />
 							</Tabs>
@@ -115,10 +129,10 @@ export default function QreuzAdminNavigation(props) {
 						<AppBar
 							position="static"
 							className={classes.qreuzNavigation}>
-							<Tabs value={navigationPosition} onChange={handleChange} aria-label="qreuz-plugin-navigation">
-								<Tab label="Get started" value="getstarted" to="admin.php?page=qreuz&subpage=getstarted" component={Link} {...a11yProps('getstarted')} />
-								<Tab label="User tracking" value="tracking" to="admin.php?page=qreuz&subpage=tracking" component={Link} {...a11yProps('tracking')} />
-								<Tab label="Shop pricing" value="pricing" to="admin.php?page=qreuz&subpage=pricing" component={Link} {...a11yProps('pricing')} />
+							<Tabs value={value} onChange={handleChange} aria-label="qreuz-plugin-navigation">
+								<Tab label="Get started" value="getstarted" to="admin.php?page=qreuz&subpage=getstarted" component={NavLink} {...a11yProps('getstarted')} />
+								<Tab label="Tracking" value="tracking" to="admin.php?page=qreuz&subpage=tracking" component={NavLink} {...a11yProps('tracking')} />
+								<Tab label="Pricing" value="pricing" to="admin.php?page=qreuz&subpage=pricing" component={NavLink} {...a11yProps('pricing')} />
 							</Tabs>
 						</AppBar>
 					</React.Fragment>

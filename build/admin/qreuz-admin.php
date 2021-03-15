@@ -96,12 +96,14 @@ class Qreuz_Admin {
 
 			$js_url  = QREUZ_PLUGINURL . 'dist/qreuz.admin.min.js';
 
+			global $qreuz_integrations;
+
 			wp_enqueue_script(
 				'qreuz_admin_js',
 				$js_url,
-				[
+				array(
 					'wp-element',
-				],
+				),
 				QREUZ_PLUGINVERSION,
 				true
 			);
@@ -116,6 +118,7 @@ class Qreuz_Admin {
 					'baseurl'          => get_bloginfo( 'wpurl' ),
 					'basepath'         => parse_url( get_bloginfo( 'wpurl' ), PHP_URL_PATH ),
 					'public_path'      => QREUZ_PLUGINURL . '/dist/',
+					'integrations'     => $qreuz_integrations,
 				)
 			);
 		}
@@ -276,8 +279,7 @@ class Qreuz_Admin {
 			register_setting( 'qreuz_smart_pricing', 'qreuz_smart_pricing_sale_percent' );
 			register_setting( 'qreuz_smart_pricing', 'qreuz_smart_pricing_price_scheme' );
 			/** settings for user tracking */
-			register_setting( 'qreuz_tracking', 'qreuz_tracking_visitor_tracking' );
-			register_setting( 'qreuz_tracking', 'qreuz_tracking_low_budget_tracking' );
+			register_setting( 'qreuz_tracking', 'qreuz_tracking_method' );
 			/** settings for userdata */
 			register_setting( 'qreuz_user_data', 'qreuz_user_data_token' );
 			register_setting( 'qreuz_user_data', 'qreuz_user_data_qkey' );

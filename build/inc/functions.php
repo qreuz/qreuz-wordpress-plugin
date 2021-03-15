@@ -49,14 +49,13 @@ if ( ! function_exists( 'qreuz_get_custom_table_name' ) ) {
 }
 
 $visitor_tracking = [
-	'active'     => get_option( 'qreuz_tracking_visitor_tracking' ),
-	'low_budget' => get_option( 'qreuz_tracking_low_budget_tracking' ),
+	'tracking_method' => get_option( 'qreuz_tracking_method' ),
 ];
 
 /**
  * Initiate visitor tracking
  */
-if ( $visitor_tracking['active'] && $visitor_tracking['low_budget'] ) {
+if ( 'frontend' === $visitor_tracking['tracking_method'] ) {
 	/**
 	 * Load low budget tracker if selected.
 	 */
@@ -66,18 +65,15 @@ if ( $visitor_tracking['active'] && $visitor_tracking['low_budget'] ) {
 
 	function qreuz_v2() {
 
-		echo "<img src=\"https://ping.qreuz.com/?v=2\" id=\"qreuz-v2\" />
+		$qkey = get_option( 'qreuz_user_data_qkey' );
+		echo "<img src=\"\" id=\"qreuz-v2\" />
 		<script>
-		var qreuzQueryString = location.search;
-		while( qreuzQueryString.charAt(0) === '?' ) {
-			qreuzQueryString.substr(1);
-		}
-		document.getElementById('qreuz-v2').src += '&qtref=' + encodeURIComponent(document.referrer) + qreuzQueryString;
+		document.getElementById('qreuz-v2').src = 'http://ping-failover.qreuz.com/v2/hit?qkey=" . $qkey . "&qtref=' + encodeURIComponent(document.referrer);
 		</script>
 	";
 
 	}
-} elseif ( $visitor_tracking['active'] && true !== $visitor_tracking['low_budget'] ) {
+} elseif ( 'enhanced' === $visitor_tracking['tracking_method'] ) {
 	/**
 	 * Load regular tracker.
 	 */
@@ -89,10 +85,10 @@ if ( $visitor_tracking['active'] && $visitor_tracking['low_budget'] ) {
 
 		wp_enqueue_script(
 			'qreuz_main_js',
-			QREUZ_PLUGINURL . 'assets/js/main.js',
-			[
-				'jquery',
-			],
+			QREUZ_PLUGINURL . 'dist/qreuz.min.js',
+			array(
+				'wp-element',
+			),
 			QREUZ_PLUGINVERSION,
 			true
 		);
@@ -101,11 +97,12 @@ if ( $visitor_tracking['active'] && $visitor_tracking['low_budget'] ) {
 			'qreuz_main_js',
 			'qreuzEnv',
 			array(
-				'_wp_ajax_url' => admin_url( 'admin-ajax.php' ),
-				'_wpnonce'     => wp_create_nonce( 'do-ajax-qtpv' ),
-				'baseurl'      => get_bloginfo( 'wpurl' ),
-				'basepath'     => parse_url( get_bloginfo( 'wpurl' ), PHP_URL_PATH ),
-				'public_path'  => QREUZ_PLUGINURL . '/dist/',
+				'_wp_ajax_url'     => admin_url( 'admin-ajax.php' ),
+				'_wpnonce'         => wp_create_nonce( 'do-ajax-qtpv' ),
+				'_wp_http_referer' => wp_get_referer(),
+				'baseurl'          => get_bloginfo( 'wpurl' ),
+				'basepath'         => parse_url( get_bloginfo( 'wpurl' ), PHP_URL_PATH ),
+				'public_path'      => QREUZ_PLUGINURL . '/dist/',
 			)
 		);
 

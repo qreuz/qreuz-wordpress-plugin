@@ -1,25 +1,16 @@
 /**
  * Basic imports/reqs.
  * */
-const { render, useState } = wp.element;
-import { BrowserRouter as Router, Route, Switch, Link, useRouteMatch, useParams } from 'react-router-dom';
 
 /**
  * Material UI imports
  * */
 import { makeStyles } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
 import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -42,10 +33,9 @@ const useStyles = makeStyles({
 	},
 	cardHeader: {
 		'& .MuiCardHeader-title': {
-			fontFamily: 'inherit',
+			fontWeight: 'bold',
 		},
 		'& .MuiCardHeader-subheader': {
-			fontSize: '0.78rem',
 		},
 	},
 	divider: {
@@ -60,9 +50,6 @@ export default function AdminPageHome(props) {
 	 * */
 	const { user, authKey, contextLoading, userPlan, isPropertyActive, message } = React.useContext(
 		GenericContext
-	);
-	const { navigationPosition, setNavigationPosition } = React.useContext(
-		LocalContext
 	);
 
 	/**
@@ -89,8 +76,7 @@ export default function AdminPageHome(props) {
 	 * useEffect on initial load.
 	 * */
 	React.useEffect(() => {
-
-		setNavigationPosition('getstarted');
+		document.title = "Get started - Qreuz";
 	}, []);
 
 	return (
@@ -99,33 +85,28 @@ export default function AdminPageHome(props) {
 			aria-labelledby={`qreuz-plugin-navigation-getstarted`}
 			>
 			<Card className={classes.root}>
-				<CardHeader
-					title="Welcome to Qreuz"
-					subheader={"Status: " + message}
-					className={classes.cardHeader}
-				/>
 				<CardContent>
-					<Typography gutterBottom variant="h5" component="h2">
+					<Typography gutterBottom variant="h3" component="h3">
 						Track your users' behavior
 					</Typography>
-					<Typography variant="body2" color="textSecondary" component="p">
-						<strong>Qreuz User Tracking</strong> helps you to analyze user behavior on your Wordpress website or WooCommerce store. Our next generation tracking technology can replace other integrations with tracking providers and works <strong>without cookies</strong>.
+					<Typography variant="body2" component="p">
+					Qreuz Tracking helps you to monitor the traffic and marketing of your WordPress website or WooCommerce store. We have invented a brand-new privacy first method of tracking user behavior. Finally, the growth and user tracking platform you were looking for.
 					</Typography>
 
 					<Divider className={classes.divider} />
-					<Typography gutterBottom variant="h5" component="h2">
+					<Typography gutterBottom variant="h3" component="h3">
 						Automate your WooCommerce pricing at scale
 					</Typography>
-					<Typography variant="body2" color="textSecondary" component="p">
-						<strong>Qreuz Shop Pricing</strong> helps you to optimize your prices across your WooCommerce store. Stop wasting time by manually adjusting prices for your products. Automatically adjust prices across your WooCommerce catalog based on price levels, sale cycles, user behavior, and more.
+					<Typography variant="body2" component="p">
+						Qreuz Shop Pricing helps you to optimize your prices across your WooCommerce store. Stop wasting time by manually adjusting prices for your products. Automatically adjust prices across your WooCommerce catalog based on price levels, sale cycles, user behavior, and more.
 					</Typography>
 
 					<Divider className={classes.divider} />
-					<Typography gutterBottom variant="h5" component="h2">
-						Connect your data where it belongs to
+					<Typography gutterBottom variant="h3" component="h3">
+						Send your data wherever you want
 					</Typography>
-					<Typography variant="body2" color="textSecondary" component="p">
-						Levarage our <strong>Qreuz Connectors</strong> to push optimized tracking data to ad networks, marketing dashboards, and email automation tools. Qreuz can integrate with the tools you are already using today.
+					<Typography variant="body2" component="p">
+						Levarage our Qreuz Connectors to push optimized tracking data to ad networks, marketing dashboards, and email automation tools. Qreuz can integrate with the tools you are already using today.
 						<List
 							aria-labelledby="qreuz-connectors-subheader"
 							subheader={
@@ -175,30 +156,30 @@ export default function AdminPageHome(props) {
 					</Typography>
 
 					<Divider className={classes.divider} />
-					<Typography gutterBottom variant="h5" component="h2">
+					<Typography gutterBottom variant="h3" component="h3">
 						Measure your WooCommerce business performance
 					</Typography>
-					<Typography variant="body2" color="textSecondary" component="p">
+					<Typography variant="body2" component="p">
 						Qreuz integrates perfectly with WooCommerce. Track conversions, add-to-carts, and other interactions of your customers. Identify the campaigns that drive your success. Understand your product performance.
 					</Typography>
 				</CardContent>
 				<CardActions>
-				<Button
-					size="small"
-					color="primary"
-					href="https://qreuz.com/contact-us"
-					target="_blank"
-					>
-					Request a new feature
-				</Button>
-				<Button
-					size="small"
-					color="primary"
-					href="https://qreuz.com/contact-us"
-					target="_blank"
-					>
-					Report a bug
-				</Button>
+					<Button
+						size="small"
+						color="primary"
+						href="https://qreuz.com/contact-us"
+						target="_blank"
+						>
+						Request a new feature
+					</Button>
+					<Button
+						size="small"
+						color="primary"
+						href="https://qreuz.com/contact-us"
+						target="_blank"
+						>
+						Report a bug
+					</Button>
 				</CardActions>
 			</Card>
 		</div>

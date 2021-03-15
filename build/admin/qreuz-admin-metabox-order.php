@@ -98,7 +98,7 @@ class Qreuz_Admin_Metabox_Order {
 			if ( 0 < $customer_total_revenue ) {
 				echo '<span>';
 				$customer_total_revenue = number_format( (float) $customer_total_revenue, 2, wc_get_price_decimal_separator(), '' );
-				echo 'Total revenue: ' . esc_html( $customer_total_revenue ) . esc_attr( get_woocommerce_currency_symbol() );
+				echo 'Total revenue: ' . esc_html( $customer_total_revenue ) . ( function_exists( 'get_woocommerce_currency' ) ? esc_attr( get_woocommerce_currency_symbol() ) : '' );
 				// Qreuz_Admin::load_helptip( 'Only counting WooCommerce orders with status "completed".', 'thin' );
 				echo '</span>';
 			}

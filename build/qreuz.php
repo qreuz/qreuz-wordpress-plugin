@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * define constants
  */
-define( 'QREUZ_PLUGINVERSION', '1.4.0' );
+define( 'QREUZ_PLUGINVERSION', '1.5.0' );
 define( 'QREUZ_PLUGINFILE', __FILE__ );
 define( 'QREUZ_PLUGINPATH', plugin_dir_path( QREUZ_PLUGINFILE ) );
 define( 'QREUZ_PLUGINURL', plugin_dir_url( QREUZ_PLUGINFILE ) );

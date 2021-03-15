@@ -42,7 +42,7 @@ class Qreuz_Database {
 			array(
 				//'id'     => "mediumint(9) NOT NULL AUTO_INCREMENT",
 				'cat_id' => "mediumint(9) NOT NULL",
-				'price'  => "decimal(6,2) NULL",
+				'price'  => "decimal(6,2)",
 			),
 			'cat_id',
 			QREUZ_PLUGINVERSION

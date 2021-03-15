@@ -1,0 +1,16 @@
+{
+    "name": "qreuz/qreuz-wordpress-plugin",
+    "description": "Official Qreuz plugin for WordPress",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Qreuz GmbH",
+            "email": "hello@qreuz.com"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "php-stubs/wordpress-stubs": "^5.6",
+        "php-stubs/woocommerce-stubs": "^4.6"
+    }
+}

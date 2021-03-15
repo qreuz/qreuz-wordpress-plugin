@@ -1,28 +1,19 @@
 /** Material UI imports */
 import { makeStyles } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import Menu from '@material-ui/core/Menu';
+import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-const useStyles = makeStyles({
+import { useForm } from "react-hook-form";
 
-});
+import { SelectAutosave } from '../../components/react-hook-form-components';
 
-/**
- * Import custom components.
- * */
-import { GenericContext, LocalContext } from './../../components/qreuz-state-provider/context';
+import { LocalContext } from './../../components/qreuz-state-provider/context';
+import { QSettingsAccordion } from './../../components/qreuz-settings-components';
+
+const useStyles = makeStyles((theme) => ({
+
+}));
 
 /**
  * Module for: Admin Page Tracking
@@ -30,74 +21,75 @@ import { GenericContext, LocalContext } from './../../components/qreuz-state-pro
 export default function AdminPageTracking(props) {
 
 	/**
-	 * Load local styles.
+	 * Load resources
 	 */
-	const classes = useStyles();
+		/** Load styles */
+		const classes = useStyles();
 
-	/**
-	 * Load context.
-	 * */
-	const { user, authKey, contextLoading, userPlan, isPropertyActive, message } = React.useContext(
-		GenericContext
-	);
-	const { wpSettingsTracking, setWpSettingsTracking, setNavigationPosition } = React.useContext(
-		LocalContext
-	);
+		/** Load context */
+		const { localStore } = React.useContext(
+			LocalContext
+		);
 
-	/**
-	 * Local state.
-	 */
-
-	/**
-	 * Handlers.
-	 */
-	const handleSettingsChange = (event) => {
-		setWpSettingsTracking({
-			...wpSettingsTracking,
-			[event.target.name]: event.target.checked
+		/** Load state */
+		const [defaultValue,setDefaultValue] = React.useState({
+			qreuz_tracking_method: localStore.tracking.qreuz_tracking_method
 		});
-	};
+
+		/** react-hook-form */
+		const { control } = useForm();
 
 	/**
 	 * useEffect on initial load.
 	 * */
 	React.useEffect(() => {
-
-		setNavigationPosition('tracking');
+		document.title = "Tracking settings - Qreuz";
 	}, []);
 
 	return (
-		<div
-			id={`qreuz-admin-page-tracking`}
-			aria-labelledby={`qreuz-plugin-navigation-tracking`}
-			index={'tracking'}
-			>
-			<Typography variant="h3">
-				User tracking settings
-			</Typography>
-
-			<FormControlLabel
-				control={
-				<Switch
-					checked={wpSettingsTracking.qreuz_tracking_visitor_tracking}
-					onChange={handleSettingsChange}
-					name="qreuz_tracking_visitor_tracking"
-					color="primary"
-				/>
-				}
-				label="Visitor tracking"
-			/>
-			<FormControlLabel
-				control={
-				<Switch
-					checked={wpSettingsTracking.qreuz_tracking_low_budget_tracking}
-					onChange={handleSettingsChange}
-					name="qreuz_tracking_low_budget_tracking"
-					color="primary"
-				/>
-				}
-				label="Low budget tracking"
-			/>
-		</div>
+		<React.Fragment>
+			<div
+				id={`qreuz-admin-page-tracking`}
+				aria-labelledby={`qreuz-plugin-navigation-tracking`}
+				index={'tracking'}
+				>
+				<Grid container spacing={0}>
+					<Grid item xs={12} md={12}>
+						<Typography variant="h2" gutterBottom>
+							User tracking
+						</Typography>
+						<Typography variant="body1" gutterBottom>
+							On this page, you can configure Qreuz Tracking.
+						</Typography>
+					</Grid>
+					<Grid item xs={12} sm={12} md={12}>
+						<QSettingsAccordion
+							name="visitorTracking"
+							title="Visitor tracking"
+							subtitle="Select your tracking method"
+							helpText={"Activate visitor tracking to start capturing behavioral data from your website's visitors. \nYou can select from the options listed here. We recommend to select 'Enhanced visitor tracking' unless you know what you're doing."}
+							learnMoreLink="https://qreuz.com/documentation"
+							>
+							<SelectAutosave
+								id="qreuz_tracking_method"
+								name="qreuz_tracking_method"
+								label="Visitor tracking method"
+								defaultValue={(defaultValue.qreuz_tracking_method === '' ? false : defaultValue.qreuz_tracking_method)}
+								control={control}
+								saveOnChange={true}
+								localStoreData={{
+									section:'tracking',
+									data:'qreuz_tracking_method'
+									}}
+								>
+									<MenuItem value="enhanced" key="enhanced">Enhanced visitor tracking (recommended)</MenuItem>
+									<MenuItem value="frontend" key="frontend">Front-end visitor tracking (not recommended)</MenuItem>
+									<MenuItem value={false} key="no_tracking">Disable visitor tracking</MenuItem>
+							</SelectAutosave>
+						</QSettingsAccordion>
+					</Grid>
+				</Grid>
+			</div>
+		</React.Fragment>
 	)
 }

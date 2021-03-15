@@ -4,7 +4,7 @@
 const { useState } = wp.element;
 import { BrowserRouter as Router, Route, Switch, Link, useRouteMatch, useParams } from 'react-router-dom';
 import { useForm } from "react-hook-form";
-import { yupResolver } from '@hookform/resolvers';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 
 /**
@@ -17,6 +17,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 
 /**
  * Custom components
@@ -28,11 +31,6 @@ import { GenericContext } from '../../components/qreuz-state-provider/context';
  * Define local styles.
  */
 const useStyles = makeStyles((theme) => ({
-	root: {
-		width: '100%',		
-		alignItems: 'left',
-		textAlign: 'left',
-	},
 	isHidden: {
 		display: 'none',
 		visibility: 'hidden',
@@ -78,10 +76,6 @@ const useStyles = makeStyles((theme) => ({
 		color: '#14b084',
 		marginBottom: '1em',
 	},
-	username: {
-		fontSize: '1.3em',
-		textAlign: 'left',
-	}
 }));
 
 /**
@@ -222,10 +216,10 @@ export default function LoadActivate(props) {
 			try {
 				const response = await QreuzAjax('qreuz_getstarted', 'activate', props, pushParams);
 
-				if ( !response.hasOwnProperty("error") ) {
-					handleSuccess(response.message, response.redirect);
+				if ( response.success === true ) {
+					handleSuccess(response.msg);
 				} else {
-					handleError(response.message);
+					handleError(response.msg);
 				}
 			} catch (e) {
 				console.log(e);
@@ -247,58 +241,77 @@ export default function LoadActivate(props) {
 
 	return (
 		<div className={classes.root}>
-			<h2>Nice! You're almost there.</h2>
-			<p>Just one more step to get started with your new Qreuz user account.</p>
-				<form
-					id="qreuz_admin_form_activate"
-					onSubmit={handleSubmit(onSubmit)}
-					className={classes.form}
-					noValidate
-					autoComplete="off"
-					>
-						<p className={classes.username}>Username: <strong>{userEmail}</strong></p>
-						<TextField 
-							inputRef={register({required:true})}
-							name="user_password"
-							id="user_password"
-							type="password"
-							label="Set your password"
-							error={errors.user_password}
-							defaultValue=""
-							disabled={loading}
-							helperText={errors.user_password ? errors.user_password.message : ' '} />
-						<TextField 
-							inputRef={register({required:true})}
-							name="user_password_verify"
-							id="user_password_verify"
-							type="password"
-							label="Confirm your password"
-							error={errors.user_password_verify}
-							disabled={loading}
-							defaultValue=""
-							helperText={errors.user_password_verify ? errors.user_password_verify.message : ' '} />
-						<p className={classes.qreuzFormLegalinfo}>By setting your password and registering an account, you are accepting our <a href="https://qreuz.com/terms-of-service" target="_blank">Terms of Service</a>, and you have read our <a href="https://qreuz.com/privacy" target="_blank">Privacy Policy</a>.</p>
-						<div className={classes.wrapper}>
-							<Button
-								variant="contained"
-								type="submit"
-								disabled={loading}
-								size="large"
+			<Grid container>
+				<Grid item xs={12} sm={12} md={12}>
+					<Typography variant="h2" gutterBottom>
+						Nice! You're almost there.
+					</Typography>
+					<Typography variant="body1" gutterBottom>
+						Just one more step to get started with your new Qreuz user account.
+					</Typography>
+				</Grid>
+				<Grid item xs={12}>
+					<Card>
+						<CardContent>
+							<form
+								id="qreuz_admin_form_activate"
+								onSubmit={handleSubmit(onSubmit)}
+								className={classes.form}
+								noValidate
+								autoComplete="off"
 								>
-								Register account
-								{loading && <CircularProgress size={24} />}
-							</Button>
-						</div>
-						<p className={classes.qreuzLogin}>Already have an account? <Link to="admin.php?page=qreuz&subpage=login">Log in here</Link></p>
-				</form>
-				<Snackbar open={open} autoHideDuration={18000} onClose={handleClose}>
-					<Alert onClose={handleClose} severity={snackbar.variant} elevation={6} variant="filled" {...props}>
-						<AlertTitle>{snackbar.title}</AlertTitle>
-						{snackbar.message}
-						<Link to={snackbar.link01}>{snackbar.linkText01}</Link>
-						<Link to={snackbar.link02}>{snackbar.linkText02}</Link>
-					</Alert>
-				</Snackbar>
+									<Typography variant="h4">
+										Set your password now
+									</Typography>
+									<Typography variant="caption">
+										Your username: <strong>{userEmail}</strong>
+									</Typography>
+									<TextField 
+										inputRef={register({required:true})}
+										name="user_password"
+										id="user_password"
+										type="password"
+										label="Set your password"
+										error={errors.user_password}
+										defaultValue=""
+										disabled={loading}
+										helperText={errors.user_password ? errors.user_password.message : ' '} />
+									<TextField 
+										inputRef={register({required:true})}
+										name="user_password_verify"
+										id="user_password_verify"
+										type="password"
+										label="Confirm your password"
+										error={errors.user_password_verify}
+										disabled={loading}
+										defaultValue=""
+										helperText={errors.user_password_verify ? errors.user_password_verify.message : ' '} />
+									<p className={classes.qreuzFormLegalinfo}>By setting your password and registering an account, you are accepting our <a href="https://qreuz.com/terms-of-service" target="_blank">Terms of Service</a>, and you have read our <a href="https://qreuz.com/privacy" target="_blank">Privacy Policy</a>.</p>
+									<div className={classes.wrapper}>
+										<Button
+											variant="contained"
+											type="submit"
+											color="primary"
+											disabled={loading}
+											size="large"
+											>
+											Register account
+											{loading && <CircularProgress size={24} />}
+										</Button>
+									</div>
+							</form>
+						</CardContent>
+					</Card>
+				</Grid>
+			</Grid>
+			<Snackbar open={open} autoHideDuration={18000} onClose={handleClose}>
+				<Alert onClose={handleClose} severity={snackbar.variant} elevation={6} variant="filled" {...props}>
+					<AlertTitle>{snackbar.title}</AlertTitle>
+					{snackbar.message}
+					<Link to={snackbar.link01}>{snackbar.linkText01}</Link>
+					<Link to={snackbar.link02}>{snackbar.linkText02}</Link>
+				</Alert>
+			</Snackbar>
 		</div>		
 	);
 }

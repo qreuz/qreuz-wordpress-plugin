@@ -5,7 +5,7 @@ const { useState } = wp.element;
 import { BrowserRouter as Router, Route, Switch, Link, useRouteMatch, useParams } from 'react-router-dom';
 import clsx from 'clsx';
 import { useForm } from "react-hook-form";
-import { yupResolver } from '@hookform/resolvers';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 
 /**
@@ -20,6 +20,9 @@ import CheckIcon from '@material-ui/icons/Check';
 import Snackbar from '@material-ui/core/Snackbar';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Grid from '@material-ui/core/Grid';
 
 /**
  * Custom components
@@ -30,24 +33,9 @@ import QreuzAjax from './../../components/qreuz-ajax';
  * Define local styles.
  */
 const useStyles = makeStyles((theme) => ({
-	root: {
-		width: '100%',		
-		alignItems: 'left',
-		textAlign: 'left',
-	},
 	isHidden: {
 		display: 'none',
 		visibility: 'hidden',
-	},
-	form: {
-		maxWidth: '500px',
-		display: 'inline-block',
-		alignItems: 'left',
-		backgroundColor:'#ffffff',
-		padding: '2em',
-	  '& > *': {
-		display: 'block',
-	  },
 	},
 	wrapper: {
 		margin: theme.spacing(1),
@@ -195,10 +183,10 @@ export default function AdminPageGetstarted(props) {
             try {
                 const response = await QreuzAjax('qreuz_getstarted','getstarted', props, pushParams);
 
-				if ( !response.hasOwnProperty("error") ) {
-					handleSuccess(response.message);
+				if ( true == response.success ) {
+					handleSuccess(response.msg);
 				} else {
-					handleError(response.message);
+					handleError(response.msg);
 				}
 
             } catch (e) {
@@ -219,50 +207,67 @@ export default function AdminPageGetstarted(props) {
 	}, []);
 
 	return (
-		<div className={classes.root}>
-			<form
-				id="qreuz_admin_form_getstarted"
-				onSubmit={handleSubmit(onSubmit)}
-				className={classes.form}
-				noValidate
-				autoComplete="off"
-				>
-				<Typography component="h5" className={classes.heading + ' ' + classes.bold}>
-					Enter your email and connect your website with Qreuz
-				</Typography>
-				<TextField
-					inputRef={register({required:true})}
-					name="user_email"
-					id="user_email"
-					type="text"
-					label="Email"
-					error={errors.user_email}
-					disabled={disabled}
-					defaultValue=""
-					helperText={errors.user_email ? errors.user_email.message : ' '}
-					InputProps={{
-						endAdornment: (
-						<InputAdornment position="end" className={formAdornment}>
-							<CheckIcon />
-						</InputAdornment>
-						),
-					}}
-					/>
-				<p className={classes.qreuzFormLegalinfo}>By entering your email address and clicking "get started", you give us permission to send you an email with the link to activate your new Qreuz account. Find more information in our <a href="https://qreuz.com/privacy" target="_blank">privacy policy</a>.</p>
-				<div className={classes.wrapper}>
-					<Button
-						variant="contained"
-						type="submit"
-						disabled={disabled}
-						size="large"
-						>
-						Get started
-						{loading && <CircularProgress size={24} />}
-					</Button>
-				</div>
-				<p className={classes.qreuzLogin}>Already have an account? <Link to="admin.php?page=qreuz&subpage=login">Log in here</Link></p>
-			</form>
-			<Snackbar
+		<Grid container>
+			<Grid item xs={12} sm={12} md={12}>
+					<Typography variant="h2" gutterBottom>
+						Welcome to Qreuz
+					</Typography>
+					<Typography variant="body1" gutterBottom>
+						Get started now!
+					</Typography>
+				</Grid>
+			<Grid item xs={12}>
+				<Card>
+					<CardContent>
+						<form
+							id="qreuz_admin_form_getstarted"
+							onSubmit={handleSubmit(onSubmit)}
+							noValidate
+							autoComplete="off"
+							>
+							<Typography component="h4" className={classes.heading + ' ' + classes.bold}>
+								Enter your email and connect your website with Qreuz
+							</Typography>
+							<TextField
+								inputRef={register({required:true})}
+								name="user_email"
+								id="user_email"
+								type="text"
+								label="Email"
+								error={errors.user_email}
+								disabled={disabled}
+								defaultValue=""
+								helperText={errors.user_email ? errors.user_email.message : ' '}
+								InputProps={{
+									endAdornment: (
+									<InputAdornment position="end" className={formAdornment}>
+										<CheckIcon />
+									</InputAdornment>
+									),
+								}}
+								/>
+							<p className={classes.qreuzFormLegalinfo}>By entering your email address and clicking "get started", you give us permission to send you an email with the link to activate your new Qreuz account. Find more information in our <a href="https://qreuz.com/privacy" target="_blank">privacy policy</a>.</p>
+							<div className={classes.wrapper}>
+								<Button
+									variant="contained"
+									type="submit"
+									color="primary"
+									disabled={disabled}
+									size="large"
+									>
+									Get started
+									{loading && <CircularProgress size={24} />}
+								</Button>
+							</div>
+							<p className={classes.qreuzLogin}>Already have an account? <Link to="admin.php?page=qreuz&subpage=login">Log in here</Link></p>
+						</form>
+					</CardContent>
+				</Card>
+				
+					
+				
+				
+				<Snackbar
 					open={open}
 					autoHideDuration={18000}
 					onClose={handleClose}
@@ -281,6 +286,7 @@ export default function AdminPageGetstarted(props) {
 						<a href={snackbar.linkLogin}>{snackbar.linkTextLogin}</a>
 					</Alert>
 				</Snackbar>
-		</div>		
+			</Grid>
+		</Grid>		
 	);
 }

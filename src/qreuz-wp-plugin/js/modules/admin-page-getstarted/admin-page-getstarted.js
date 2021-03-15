@@ -5,7 +5,7 @@ const { useState } = wp.element;
 import { BrowserRouter as Router, Route, Switch, Link, useRouteMatch, useParams } from 'react-router-dom';
 import clsx from 'clsx';
 import { useForm } from "react-hook-form";
-import { yupResolver } from '@hookform/resolvers';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 
 /**
@@ -106,9 +106,6 @@ export default function AdminPageGetstarted(props) {
 	 * */
 	const { user, authKey, contextLoading } = React.useContext(
 		GenericContext
-	);
-	const { navigationPosition, setNavigationPosition } = React.useContext(
-		LocalContext
 	);
 
 	/**
@@ -221,7 +218,7 @@ export default function AdminPageGetstarted(props) {
 	 * Initial load effect.
 	 * */
 	React.useEffect(() => {
-		setNavigationPosition('getstarted');
+		
 		document.title = "Get started - Qreuz";
 		return () => {
 			clearTimeout(timer.current);

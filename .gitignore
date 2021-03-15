@@ -1,2 +1,7 @@
 node_modules
 .vscode
+.ffs_db
+vendor/
+wordpress-stubs.php
+woocommerce-stubs.php
+woocommerce-packages-stubs.php

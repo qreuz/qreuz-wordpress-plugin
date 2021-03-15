@@ -55,10 +55,10 @@ export default function QreuzAjax(action,form,props,params) {
 			}
 		})
 		.then(data => {
-				return data.response;
+				return data;
 		});
 
-		return ( response != undefined ? response : '{"error":"response undefined"}');
+		return ( response != undefined ? response : '{"success": false, "msg": "response undefined"}');
 	}
 
 	return doAjax();

@@ -63,13 +63,11 @@ class Qreuz_Smart_Pricing {
 			/**
 			 *  User not allowed to access.
 			 */
-			$response = json_encode( array(
-				'response' => [
-					'error' => 'error',
-				],
-			) );
+			$response =  array(
+				'success' => false,
+			);
 
-			wp_die( $response );
+			wp_die( wp_json_encode( $response ) );
 		} else {
 			/**
 			 * User ok. Proceed.
@@ -78,12 +76,12 @@ class Qreuz_Smart_Pricing {
 
 
 			foreach ( $product_categories as $product_category => $array ) {
-					
+
 				$value = sanitize_text_field( $array['price'] );
 
 				$price_array[ $array['term_id'] ] = '' !== $value ? $value : null;
 			}
-			
+
 			/** store updated prices to database */
 			Qreuz_Database::insert_data_2col( 'smart_pricing_prices', $price_array, 'cat_id', 'price' );
 		}
@@ -101,13 +99,10 @@ class Qreuz_Smart_Pricing {
 			/**
 			 *  No valid ajax request or user not allowed to access.
 			 */
-			$response = json_encode( array(
-				'response' => [
-					'error' => 'error',
-				],
-			) );
-			wp_die( $response );
-			
+			$response = array(
+				'success' => false,
+			);
+			wp_die( wp_json_encode( $response ) );
 		} else {
 
 			/**

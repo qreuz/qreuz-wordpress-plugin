@@ -4,6 +4,8 @@ export function QreuzTrackerAjax() {
 		action: 'qreuz_track_pageview',
 		_wpnonce: qreuzEnv._wpnonce,
 		_wp_http_referer: qreuzEnv._wp_http_referer,
+		url: window.location.href,
+		ref: document.referrer,
 	}
 
 	const ajaxObj = {...ajaxObjBase}

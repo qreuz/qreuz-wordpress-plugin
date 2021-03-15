@@ -1,6 +1,6 @@
 const defaultConfig = require("@wordpress/scripts/config/webpack.config");
 const path = require('path');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
 
 sharedConfig = {
 	...defaultConfig,
@@ -12,10 +12,6 @@ sharedConfig = {
 		...defaultConfig.module,
 		rules: [
 			...defaultConfig.module.rules,
-			{
-				test: /\.svg$/,
-				use: ['@svgr/webpack'],
-			},
 		],
 	},
 	plugins: [
@@ -43,7 +39,6 @@ module.exports = [
 		},
 		plugins: [
 			...sharedConfig.plugins,
-			new CleanWebpackPlugin(),
 		],
 	},
 	{

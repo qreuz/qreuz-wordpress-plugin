@@ -4,5 +4,4 @@
 const { render, useState } = wp.element;
 
 import { QreuzTrackerAjax } from './components/qreuz-ajax';
-
-const QreuzTracker = QreuzTrackerAjax;
+QreuzTrackerAjax();

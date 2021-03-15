@@ -2,7 +2,7 @@
 Contributors: matthiasreinholz, qreuz
 Tags: analytics, business intelligence, tracking, marketing automation, e-commerce, online shop, woocommerce, google analytics, facebook pixel, bing ads, google ads
 Requires at least: 4.9
-Tested up to: 5.5
+Tested up to: 5.7
 Stable tag: trunk
 Requires PHP: 7.0
 License: GPLv3 or later
@@ -88,6 +88,11 @@ No, the Qreuz plugin is free and open source. This plugin also acts as an interf
 2. Automate prices in WooCommerce shops
 
 == Changelog ==
+
+= 1.5.0 2021-03-15 =
+* Tweak - Improve Qreuz service login procedure
+* Tweak - Improve backend experience and add new design
+* Tweak - disclose WordPress 5.7 compatibility
 
 = 1.4.0 2020-09-24 = 
 * Beta Feature - WooCommerce Toolbox feature: synchronize customer orders

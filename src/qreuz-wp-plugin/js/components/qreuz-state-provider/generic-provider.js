@@ -5,20 +5,22 @@ import { GenericContext } from './context';
 /** initial values */
 const initialState = {
 	contextLoading: true,
+	localContextLoading: true,
 	open: false,
 	user: false,
 	userPlan: false,
 	authKey: false,
 	authParam: false,
 	userEmail: false,
-	isPropertyActive: false,
+	isPropertyActive: true,
 	justLoggedIn: false,
-	message: false,
+	message: undefined,
 };
 
 /** actions */
 const actions = {
 	SET_CONTEXT_LOADING: "SET_CONTEXT_LOADING",
+	SET_LOCAL_CONTEXT_LOADING: "SET_LOCAL_CONTEXT_LOADING",
 	SET_OPEN: "SET_OPEN",
 	SET_USER: "SET_USER",
 	SET_USER_PLAN: "SET_USER_PLAN",
@@ -37,6 +39,11 @@ function GenericReducer(state, action) {
 			return {
 				...state,
 				contextLoading: action.value
+			};
+		case actions.SET_LOCAL_CONTEXT_LOADING:
+			return {
+				...state,
+				localContextLoading: action.value
 			};
 		case actions.SET_OPEN:
 			return {
@@ -94,6 +101,7 @@ export default function GenericProvider({ children }, props) {
 
 	const value = {
 		contextLoading: state.contextLoading,
+		localContextLoading: state.localContextLoading,
 		open: state.open,
 		user: state.user,
 		userPlan: state.userPlan,
@@ -105,6 +113,9 @@ export default function GenericProvider({ children }, props) {
 		message: state.message,
 		setContextLoading: value => {
 			dispatch({ type: actions.SET_CONTEXT_LOADING, value });
+		},
+		setLocalContextLoading: value => {
+			dispatch({ type: actions.SET_LOCAL_CONTEXT_LOADING, value });
 		},
 		setOpen: value => {
 			dispatch({ type: actions.SET_OPEN, value });
@@ -148,7 +159,7 @@ export default function GenericProvider({ children }, props) {
 
 			const response = await QreuzAjax('qreuz_get_user_data','wp_plugin_generic_provider_data',props);
 
-			if (response.user === "false") {
+			if (response.user !== true) {
 				/**
 				 * User is not logged in (Guest mode).
 				 */
@@ -166,7 +177,7 @@ export default function GenericProvider({ children }, props) {
 								"auth_key": paramAuth
 							}
 							const authKeyResponse = await QreuzAjax('qreuz_getstarted', 'wp_plugin_check_auth_key', props, pushParams);
-							if (authKeyResponse.auth === "true") {
+							if (authKeyResponse.success === true) {
 								value.setAuthKey(true);
 								value.setAuthParam(paramAuth);
 								value.setUserEmail(authKeyResponse.email);
@@ -193,9 +204,9 @@ export default function GenericProvider({ children }, props) {
 				 */
 				value.setContextLoading(false);
 				value.setUser(true);
-				value.setUserPlan(response.plan);
-				value.setIsPropertyActive(response.is_active);
-				value.setMessage(response.message);
+				value.setUserPlan(response.user_data.plan.active);
+				value.setIsPropertyActive(response.user_data.is_active);
+				value.setMessage((response.user_data.is_active ? 'active' : 'pending'));
 			}
 		} catch (e) {
 
@@ -217,6 +228,7 @@ export default function GenericProvider({ children }, props) {
 	React.useEffect(() => {
 
 		fetchData();
+		value.setJustLoggedIn(false);
 	}, [value.justLoggedIn]);
 
 	return (

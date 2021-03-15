@@ -1,11 +1,9 @@
 /**
  * Basic imports/reqs.
  * */
-const { render, useState } = wp.element;
 import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Route, Switch, Link, useRouteMatch, useHistory, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 var qs = require('qs');
-import PropTypes from 'prop-types';
 
 /** Material UI imports */
 import { ThemeProvider, makeStyles, createMuiTheme } from '@material-ui/core/styles';
@@ -13,12 +11,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
 
 /**
  * Import theme
  * */
 import { qreuzTheme } from './../../../../shared/components/qreuz-theme';
+
 const qreuzThemeWpPlugin = createMuiTheme({
 	...qreuzTheme,
 	overrides: {
@@ -38,6 +36,7 @@ const qreuzThemeWpPlugin = createMuiTheme({
  * */
 import { GenericContext } from './../../components/qreuz-state-provider/context';
 import QreuzHelperErrorBoundary from './../../components/qreuz-helper-error-boundary';
+import QreuzLoading from '../../components/qreuz-loading';
 const QreuzPluginNavigation = React.lazy(() => import('./../../components/qreuz-plugin-navigation'));
 
 /**
@@ -53,7 +52,7 @@ const AdminPagePricing = React.lazy(() => import('./../admin-page-pricing'));
 const AdminPageGetstarted = React.lazy(() => import('./../admin-page-getstarted'));
 const AdminPageLogin = React.lazy(() => import('./../admin-page-login'));
 const AdminPageTracking = React.lazy(() => import('./../admin-page-tracking'));
-const AdminPageWhatIsQreuz = React.lazy(() => import('./../admin-page-what-is-qreuz'));
+const AdminPageWhatIsQreuz = React.lazy(() => import('./../admin-page-home'));
 const AdminSidebar = React.lazy(() => import('./../admin-sidebar'));
 
 /**
@@ -87,14 +86,14 @@ export default function ModuleAdminPbContent(props) {
 	/**
 	 * Load context.
 	 * */
-	const { open, user, contextLoading } = React.useContext(
+	const { user, contextLoading, localContextLoading } = React.useContext(
 		GenericContext
 	);
 
 	/**
 	 * Local state.
 	 */
-	const [value, setValue] = React.useState(0);
+	
 
 	/**
 	 * Load local styles.
@@ -142,7 +141,7 @@ export default function ModuleAdminPbContent(props) {
 							</Switch>
 						</Grid>
 						<Grid item xs={12} sm={12} md={4}>
-							<AdminSidebar {...props} />
+							
 						</Grid>
 					</Grid>
 				</Box>
@@ -160,10 +159,14 @@ export default function ModuleAdminPbContent(props) {
 		switch ( queryParams.subpage ) {
 			case 'getstarted':
 				return ( <AdminPageHome {...props} /> );
+				break;
 			case 'tracking':
 				return ( <AdminPageTracking {...props} /> );
+				break;
 			case 'pricing':
-				return ( <AdminPagePricing {...props} /> );
+				if ( qreuzEnv.integrations.woocommerce ) {
+					return ( <AdminPagePricing {...props} /> );
+				}
 			default:
 				return ( <AdminPageHome {...props} /> );
 		}
@@ -173,7 +176,6 @@ export default function ModuleAdminPbContent(props) {
 	 * Load content for logged-in (user) mode.
 	 * */
 	const LoadUser = () => {
-
 		return (
 			<Router basename={(qreuzEnv.basepath == null ? '' : qreuzEnv.basepath) + "/wp-admin"}>
 				<QreuzPluginNavigation {...props} />
@@ -197,32 +199,25 @@ export default function ModuleAdminPbContent(props) {
 	 * Load content based on user/guest switch.
 	 *  */
 	const LoadUserOrGuest = () => {
-		if ( user === false ) {
-			return <LoadGuest {...props} />
-		} else if ( user !== false ) {
-			return <LoadUser {...props} />
+		if ( contextLoading || localContextLoading  ) {
+			/**
+			 * Loading animation as long as contextLoading is true.
+			 */
+			return(
+				<React.Fragment>
+					<ThemeProvider theme={qreuzThemeWpPlugin}>
+						{qreuzSuspenseLoader()}
+					</ThemeProvider>
+				</React.Fragment>
+			)
+		} else {
+			if ( user === false ) {
+				return <LoadGuest {...props} />
+			} else if ( user !== false ) {
+				return <LoadUser {...props} />
+			}
 		}
 	}
-
-	/**
-	 * Loading animation as long as contextLoading is true.
-	 */
-	if ( contextLoading ) {
-		return (
-			<React.Fragment>
-				<ThemeProvider theme={qreuzThemeWpPlugin}>
-					{qreuzSuspenseLoader()}
-				</ThemeProvider>
-			</React.Fragment>
-		);
-	}
-
-	/**
-	 * Handlers.
-	 */
-	const handleChange = (event, newValue) => {
-		setValue(newValue);
-	};
 
 	/**
 	 * Return the content of the plugin admin pages.
@@ -230,9 +225,10 @@ export default function ModuleAdminPbContent(props) {
 	return (
 		<React.Fragment>
 			<ThemeProvider theme={qreuzThemeWpPlugin}>
+				<QreuzLoading />
 				<QreuzHelperErrorBoundary>
 					<Suspense fallback={qreuzSuspenseLoader()}>
-							<LoadUserOrGuest {...props} />
+						<LoadUserOrGuest {...props} />
 					</Suspense>
 				</QreuzHelperErrorBoundary>
 			</ThemeProvider>

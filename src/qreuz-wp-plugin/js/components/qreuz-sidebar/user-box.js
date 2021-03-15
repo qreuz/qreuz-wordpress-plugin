@@ -2,7 +2,7 @@
  * Basic imports/reqs.
  * */
 const { useState } = wp.element;
-import { BrowserRouter as Router, Route, Switch, Link, useRouteMatch, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Link, useRouteMatch, useParams, Redirect } from 'react-router-dom';
 
 /**
  * Material UI imports
@@ -25,6 +25,7 @@ import MenuItem from '@material-ui/core/MenuItem';
  * Import custom components.
  * */
 import { GenericContext, LocalContext } from './../../components/qreuz-state-provider/context';
+import QreuzAjax from './../qreuz-ajax';
 
 /**
  * Define local styles.
@@ -69,6 +70,31 @@ export default function UserBox(props) {
 	const classes = useStyles();
 
 	/**
+	 * Functions
+	 */
+		/** Process logout */
+		const processLogout = async () => {
+			try {
+				const response = await QreuzAjax('qreuz_logout','now',props);
+				if (response.success !== true) {
+					/**
+					 * Logout not successful.
+					 */
+					
+				} else {
+					/**
+					 * Logged out.
+					 */
+					document.location.reload();
+					
+				}
+			} catch (e) {
+	
+				console.log(e);
+			}
+		}
+
+	/**
 	 * Handlers.
 	 */
 	const handleClick = (event) => {
@@ -76,6 +102,10 @@ export default function UserBox(props) {
 	  };
 	const handleClose = () => {
 		setAnchorEl(null);
+	};
+	const handleLogout = (e) => {
+		handleClose();
+		processLogout();
 	};
 
 	/**
@@ -144,7 +174,7 @@ export default function UserBox(props) {
 				open={Boolean(anchorEl)}
 				onClose={handleClose}
 				>
-				<MenuItem onClick={handleClose}>Logout</MenuItem>
+				<MenuItem onClick={(e) => handleLogout(e)}>Logout</MenuItem>
 			</Menu>
 		</div>
 	)

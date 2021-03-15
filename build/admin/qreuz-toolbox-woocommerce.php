@@ -39,21 +39,20 @@ class Qreuz_Toolbox_Woocommerce {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 
-			$response = json_encode( array(
-				'response' => [
-					'success' => 'false',
-					'message' => 'Error',
-					'error'   => 'error',
-				],
-			) );
+			$response = array(
+				'success' => false,
+				'msg'     => 'Error',
+			);
 
 			return $response;
 		} else {
 
-			$customers = get_users( [
-				'role__in' => ['customer'],
-				'fields'   => ['ID','user_email'],
-				] );
+			$customers = get_users(
+				array(
+					'role__in' => array( 'customer' ),
+					'fields'   => array( 'ID', 'user_email' ),
+				),
+			);
 
 			foreach ( $customers as $customer ) {
 				wc_update_new_customer_past_orders( $customer->ID );
@@ -64,12 +63,10 @@ class Qreuz_Toolbox_Woocommerce {
 		 * TODO:
 		 * Implement proper feedback mechanism.
 		 */
-		$response = json_encode( array(
-			'response' => [
-				'success' => 'true',
-				'message' => 'Orders updated.',
-			],
-		) ); 
+		$response = array(
+			'success' => true,
+			'msg'     => 'Orders updated.',
+		);
 
 		return $response;
 	}

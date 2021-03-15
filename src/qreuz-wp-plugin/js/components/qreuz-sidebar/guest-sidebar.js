@@ -1,8 +1,7 @@
 /**
  * Basic imports/reqs.
  * */
-const { useState } = wp.element;
-import { BrowserRouter as Router, Route, Switch, Link, useRouteMatch, useParams } from 'react-router-dom';
+
 
 /**
  * Material UI imports
@@ -98,7 +97,6 @@ export default function GuestSidebar(props) {
 					</Typography>
 				</CardContent>{**/}
 				<CardContent>
-				<QreuzToolboxWoocommerce />
 				</CardContent>
 				<CardActions>
 				<Button

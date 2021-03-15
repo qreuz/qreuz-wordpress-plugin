@@ -32,8 +32,9 @@ class Qreuz_Tracking_Datapoints {
 
 		if ( true === $baseurl ) {
 			$url = esc_url_raw( ( isset( $_SERVER['HTTPS'] ) ? 'https' : 'http' ) . "://$_SERVER[HTTP_HOST]" );
-		} elseif ( 'pure' === $baseurl )  {
+		} elseif ( 'pure' === $baseurl ) {
 			$url = esc_url_raw( $_SERVER['HTTP_HOST'] );
+			$url = str_replace( array( 'http://', 'https://' ), '', $url );
 		} else {
 			$url = esc_url_raw( ( isset( $_SERVER['HTTPS'] ) ? 'https' : 'http' ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" );
 		}

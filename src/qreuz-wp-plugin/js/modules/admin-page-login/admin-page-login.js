@@ -4,48 +4,35 @@
 const { render, useState } = wp.element;
 import { BrowserRouter as Router, Route, Switch, Link, useRouteMatch, useParams } from 'react-router-dom';
 import { useForm } from "react-hook-form";
-import { yupResolver } from '@hookform/resolvers';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 
 /**
  * Material UI imports
  */
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 
 /**
  * Custom components
  */
 import QreuzAjax from './../../components/qreuz-ajax';
-import { GenericContext, LocalContext } from '../../components/qreuz-state-provider/context';
+import { GenericContext } from '../../components/qreuz-state-provider/context';
 
 /**
  * Define local styles.
  */
 const useStyles = makeStyles((theme) => ({
-	root: {
-		width: '100%',		
-		alignItems: 'left',
-		textAlign: 'left',
-	},
 	isHidden: {
 		display: 'none',
 		visibility: 'hidden',
-	},
-	form: {
-		maxWidth: '500px',
-		display: 'inline-block',
-		alignItems: 'left',
-		backgroundColor:'#ffffff',
-		padding: '2em',
-	  '& > *': {
-		display: 'block',
-	  },
 	},
 	heading: {
 		textAlign: 'left',
@@ -103,9 +90,6 @@ export default function Login(props) {
 	const { setJustLoggedIn } = React.useContext(
 		GenericContext
 	);
-	const { navigationPosition, setNavigationPosition } = React.useContext(
-		LocalContext
-	);
 
 	/**
 	 * Local state.
@@ -136,7 +120,7 @@ export default function Login(props) {
 	/**
 	 * Handlers
 	 * */
-	const handleSuccess = (msg,redirect) => {
+	const handleSuccess = (msg) => {
 		setLoading(true);
 		setSuccess(true);
 		setSnackbar({ 
@@ -205,18 +189,18 @@ export default function Login(props) {
 		}
 
 		const pushParams = {
-			password: data.user_password,
-			email: data.user_email
+			user_password: data.user_password,
+			user_email: data.user_email
 		}
 
 		const pushData = async () => {
 			try {
-				const response = await QreuzAjax('qreuz_get_started', 'login', props, pushParams);
+				const response = await QreuzAjax('qreuz_getstarted', 'login', props, pushParams);
 
-				if ( !response.hasOwnProperty("error") ) {
-					handleSuccess(response.message, response.redirect);
+				if ( response.success === true ) {
+					handleSuccess(response.msg);
 				} else {
-					handleError(response.message);
+					handleError(response.msg);
 				}
 			} catch (e) {
 				console.log(e);
@@ -230,7 +214,6 @@ export default function Login(props) {
 	 * Initial load effect.
 	 * */
 	React.useEffect(() => {
-		setNavigationPosition('getstarted');
 		document.title = "Login - Qreuz";
 		return () => {
 			clearTimeout(timer.current);
@@ -238,58 +221,62 @@ export default function Login(props) {
 	}, []);
 
 	return (
-		<div className={classes.root}>
-				<form
-					id="qreuz_admin_form_login"
-					onSubmit={handleSubmit(onSubmit)}
-					className={classes.form}
-					noValidate
-					autoComplete="off"
-					>
-						<Typography component="h5" className={classes.heading + ' ' + classes.bold}>
-							Log in to your user account at Qreuz
-						</Typography>
-						<TextField 
-							inputRef={register({required:true})}
-							name="user_email"
-							id="user_email"
-							type="text"
-							label="Email"
-							disabled={loading}
-							error={errors.user_email}
-							defaultValue=""
-							helperText={errors.user_email ? errors.user_email.message : ' '} />
-						<TextField 
-							inputRef={register({required:true})}
-							name="user_password"
-							id="user_password"
-							type="password"
-							label="Password"
-							disabled={loading}
-							error={errors.user_password}
-							defaultValue=""
-							helperText={errors.user_password ? errors.user_password.message : ' '} />
-						<div className={classes.wrapper}>
-							<Button
-								variant="contained"
-								type="submit"
+		<React.Fragment>
+			<Card>
+				<CardContent>
+					<form
+						id="qreuz_admin_form_login"
+						onSubmit={handleSubmit(onSubmit)}
+						noValidate
+						autoComplete="off"
+						>
+							<Typography component="h5" className={classes.heading + ' ' + classes.bold}>
+								Log in to your user account at Qreuz
+							</Typography>
+							<TextField 
+								inputRef={register({required:true})}
+								name="user_email"
+								id="user_email"
+								type="text"
+								label="Email"
 								disabled={loading}
-								size="large"
-								>
-								Log in
-								{loading && <CircularProgress size={24} />}
-							</Button>
-						</div>
-						<p className={classes.qreuzLogin}>No account yet? <Link to="admin.php?page=qreuz&subpage=getstarted">Get started here</Link></p>
-				</form>
-				<Snackbar open={open} autoHideDuration={18000} onClose={handleClose}>
-					<Alert onClose={handleClose} severity={snackbar.variant} elevation={6} variant="filled" {...props}>
-						<AlertTitle>{snackbar.title}</AlertTitle>
-						{snackbar.message}
-						<Link to={snackbar.link01}>{snackbar.linkText01}</Link>
-						<Link to={snackbar.link02}>{snackbar.linkText02}</Link>
-					</Alert>
-				</Snackbar>
-		</div>		
+								error={errors.user_email}
+								defaultValue=""
+								helperText={errors.user_email ? errors.user_email.message : ' '} />
+							<TextField 
+								inputRef={register({required:true})}
+								name="user_password"
+								id="user_password"
+								type="password"
+								label="Password"
+								disabled={loading}
+								error={errors.user_password}
+								defaultValue=""
+								helperText={errors.user_password ? errors.user_password.message : ' '} />
+							<div className={classes.wrapper}>
+								<Button
+									variant="contained"
+									type="submit"
+									disabled={loading}
+									size="large"
+									color="primary"
+									>
+									Log in
+									{loading && <CircularProgress size={24} />}
+								</Button>
+							</div>
+							<p className={classes.qreuzLogin}>No account yet? <Link to="admin.php?page=qreuz&subpage=getstarted">Get started here</Link></p>
+					</form>
+				</CardContent>
+			</Card>
+			<Snackbar open={open} autoHideDuration={18000} onClose={handleClose}>
+				<Alert onClose={handleClose} severity={snackbar.variant} elevation={6} variant="filled" {...props}>
+					<AlertTitle>{snackbar.title}</AlertTitle>
+					{snackbar.message}
+					<Link to={snackbar.link01}>{snackbar.linkText01}</Link>
+					<Link to={snackbar.link02}>{snackbar.linkText02}</Link>
+				</Alert>
+			</Snackbar>
+		</React.Fragment>	
 	);
 }

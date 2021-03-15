@@ -54,9 +54,6 @@ export default function AdminPageWhatIsQreuz(props) {
 	const { user, authKey, contextLoading, userPlan, isPropertyActive, message } = React.useContext(
 		GenericContext
 	);
-	const { navigationPosition, setNavigationPosition } = React.useContext(
-		LocalContext
-	);
 
 	/**
 	 * Local state.
@@ -82,8 +79,7 @@ export default function AdminPageWhatIsQreuz(props) {
 	 * useEffect on initial load.
 	 * */
 	React.useEffect(() => {
-
-		setNavigationPosition('whatisqreuz');
+		document.title = "What is Qreuz";
 	}, []);
 
 	return (
