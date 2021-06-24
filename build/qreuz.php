@@ -3,7 +3,7 @@
  * Plugin Name: Qreuz
  * Plugin URI: https://qreuz.com/qreuz-wordpress-plugin/
  * Description: Qreuz enables automated business growth on your WooCommerce store. Elevate your game with sales tracking, inventory optimization, and AI-powered insights.
- * Version: 1.4.0
+ * Version: 1.5.1
  * Author: Qreuz GmbH
  * Author URI:  https://qreuz.com
  * License: GPL v3 or later
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * define constants
  */
-define( 'QREUZ_PLUGINVERSION', '1.5.0' );
+define( 'QREUZ_PLUGINVERSION', '1.5.1' );
 define( 'QREUZ_PLUGINFILE', __FILE__ );
 define( 'QREUZ_PLUGINPATH', plugin_dir_path( QREUZ_PLUGINFILE ) );
 define( 'QREUZ_PLUGINURL', plugin_dir_url( QREUZ_PLUGINFILE ) );

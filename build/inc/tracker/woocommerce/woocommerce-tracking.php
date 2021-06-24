@@ -82,7 +82,7 @@ class Qreuz_WooCommerce_Tracking {
 			/** add transaction data to array for ecommerce tracking */
 			$this->transaction_data['qtno'] = $order_number;
 			$this->transaction_data['qa']   = get_bloginfo( 'name' );
-			$this->transaction_data['qtv']  = $order_total;
+			$this->transaction_data['qtv']  = round( $order_total );
 			$this->transaction_data['qtx']  = $order_total_tax;
 			$this->transaction_data['qts']  = $order_shipping_total;
 

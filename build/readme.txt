@@ -89,6 +89,13 @@ No, the Qreuz plugin is free and open source. This plugin also acts as an interf
 
 == Changelog ==
 
+= 1.6.0 2021-06-18 = 
+* Fix - Get event tracking for WooCommerce up again
+* Fix - Get transaction tracking for WooCommerce up again
+
+= 1.5.1 2021-04-07 =
+* Fix - Disable tracking after logout
+
 = 1.5.0 2021-03-15 =
 * Tweak - Improve Qreuz service login procedure
 * Tweak - Improve backend experience and add new design

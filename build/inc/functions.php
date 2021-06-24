@@ -48,14 +48,15 @@ if ( ! function_exists( 'qreuz_get_custom_table_name' ) ) {
 	}
 }
 
-$visitor_tracking = [
+$visitor_tracking = array(
+	'active'          => get_option( 'qreuz_user_data_auth_status' ),
 	'tracking_method' => get_option( 'qreuz_tracking_method' ),
-];
+);
 
 /**
  * Initiate visitor tracking
  */
-if ( 'frontend' === $visitor_tracking['tracking_method'] ) {
+if ( 'frontend' === $visitor_tracking['tracking_method'] && '1' === $visitor_tracking['active'] ) {
 	/**
 	 * Load low budget tracker if selected.
 	 */
@@ -68,12 +69,12 @@ if ( 'frontend' === $visitor_tracking['tracking_method'] ) {
 		$qkey = get_option( 'qreuz_user_data_qkey' );
 		echo "<img src=\"\" id=\"qreuz-v2\" />
 		<script>
-		document.getElementById('qreuz-v2').src = 'http://ping-failover.qreuz.com/v2/hit?qkey=" . $qkey . "&qtref=' + encodeURIComponent(document.referrer);
+		document.getElementById('qreuz-v2').src = 'https://ping.qreuz.com/v2/hit?qkey=" . $qkey . "&qtref=' + encodeURIComponent(document.referrer);
 		</script>
 	";
 
 	}
-} elseif ( 'enhanced' === $visitor_tracking['tracking_method'] ) {
+} elseif ( 'enhanced' === $visitor_tracking['tracking_method'] && '1' === $visitor_tracking['active'] ) {
 	/**
 	 * Load regular tracker.
 	 */

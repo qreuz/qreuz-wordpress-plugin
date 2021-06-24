@@ -53,18 +53,29 @@ let qreuzThemeObj = createMuiTheme({
 			green01: '#14b084',
 			green02: '#00cc99',
 			green03: '#00ffcc',
-			green04: '#339999',
+			green04: '#3f6e6e',
 			green05: '#00F2A9',
+			darkgreen01: '#3f6e6e',
+			darkgreen01alt: '#588d8d',
+			darkgreen02: '#339999',
+			darkgreen03: '#006062',
 			lightgreen01: 'rgba(20,176,132,0.4)',
 			lightgreen02: 'rgba(20,176,132,0.6)',
 			grey01: '#999999',
 			grey02: '#666666',
 			grey03: '#f3f3f3',
 			grey04: 'rgba(145, 158, 171,1)',
+			grey05: '#cccccc',
+			grey06: '#eaeaea',
 			yellow01: '#fff000',
+			yellow02: '#DEB841',
 			background: '#fafafa',
 			notification: '#FF715B',
 			white: '#FFFFFF',
+			blue03: '#00798c',
+			darkblue01: '#004562',
+			red01: '#FF715B',
+			red01Text: '#f5deb3',
 		},
 		success: {
 			main: '#00cc99',
@@ -78,6 +89,7 @@ let qreuzThemeObj = createMuiTheme({
 	},
 	typography: {
 		fontFamily: '"Roboto","Helvetica","Arial",sans-serif',
+		fontFamilyThin: '"BwModelica-Thin","Roboto-Light","Helvetica","Arial",sans-serif',
 		bold: {
 			fontFamily: '"Roboto-Bold","Roboto","Helvetica","Arial",sans-serif',
 		},
@@ -100,17 +112,17 @@ let qreuzThemeObj = createMuiTheme({
 			fontFamily: '"BwModelica-ExtraBold","Roboto-Bold","Roboto","Helvetica","Arial",sans-serif',
 		},
 		h4: {
-			fontSize: '1.5rem',
+			fontSize: '1rem',
 			fontWeight: '700',
 			fontFamily: '"Roboto-Bold","Roboto","Helvetica","Arial",sans-serif',
 		},
 		h5: {
-			fontSize: '1rem',
+			fontSize: '0.8rem',
 			fontWeight: '700',
 			fontFamily: '"Roboto-Bold","Roboto","Helvetica","Arial",sans-serif',
 		},
 		h6: {
-			fontSize: '1rem',
+			fontSize: '0.8rem',
 			fontWeight: '600',
 			fontFamily: '"Roboto-Medium","Roboto","Helvetica","Arial",sans-serif',
 		},
@@ -125,10 +137,14 @@ let qreuzThemeObj = createMuiTheme({
 					fontSize: '0.78rem',
 					display: 'inline',
 					verticalAlign: 'baseline',
+				},
+				'& :first-child': {
+					borderTopLeftRadius:'4px',
 				}
 			},
 			rounded: {
-				borderRadius: qreuzThemeVars.borderRadius,
+				
+				//borderRadius: qreuzThemeVars.borderRadius,
 			},
 		},
 		MuiAppBar: {
@@ -143,8 +159,8 @@ let qreuzThemeObj = createMuiTheme({
 				border: 0,
 				borderRadius: 4,
 				transition: '0.5s',
-				height: '48px',
-				padding: '0 30px',
+				//height: '48px',
+				//padding: '0 30px',
 				background: 'none',
 				fontWeight: 'normal',
 				color: qreuzThemeVars.grey02,
@@ -199,6 +215,21 @@ let qreuzThemeObj = createMuiTheme({
 			},
 			containedPrimary: {
 				background: qreuzThemeVars.green01,
+				fontFamily: '"Roboto-Medium", "Helvetica", "Arial", sans-serif',
+				//background: 'linear-gradient(45deg, #14b084 30%, #00cc99 90%)',
+				color: qreuzThemeVars.white,
+				'& :hover': {
+					//background: 'linear-gradient(45deg, #14b084 10%, #00cc99 60%)',
+					color: qreuzThemeVars.white,
+				},
+				'&.Mui-disabled': {
+					//background: qreuzThemeVars.green04,
+					background: 'linear-gradient(45deg, #cccccc 10%, #cccccc 60%)',
+					color: qreuzThemeVars.white,
+				},
+			},
+			containedSecondary: {
+				background: qreuzThemeVars.green05,
 				fontFamily: '"Roboto-Medium", "Helvetica", "Arial", sans-serif',
 				//background: 'linear-gradient(45deg, #14b084 30%, #00cc99 90%)',
 				color: qreuzThemeVars.white,
@@ -306,7 +337,7 @@ let qreuzThemeObj = createMuiTheme({
 		},
 		MuiGrid: {
 			item: {
-				marginBottom: '1em',
+				//marginBottom: '1em',
 			},
 			'spacing-xs-6': {
 
@@ -329,7 +360,7 @@ let qreuzThemeObj = createMuiTheme({
 			root: {
 				'& .MuiSvgIcon-root': {
 					verticalAlign: 'middle',
-					color: '#999999',
+					//color: '#999999',
 					//margin: '.3em 0 .3em 0',
 				},
 			},
@@ -433,10 +464,13 @@ let qreuzThemeObj = createMuiTheme({
 			body2: {
 				fontSize: '0.875rem',
 			},
+			gutterBottom: {
+				marginBottom: '0.5em',
+			},
 		},
 		MuiPaper: {
 			rounded: {
-				borderRadius: '4px',
+				//borderRadius: '4px',
 			},
 		},
 		formError: {

@@ -115,7 +115,7 @@ class Qreuz_Ajax {
 			/**
 			 * Valid ajax request and user allowed to access.
 			 */
-			if ( false === get_option( 'qreuz_user_data_auth_status' ) || false === get_option( 'qreuz_user_data_token' ) || false === get_option( 'qreuz_user_data_email' ) ) {
+			if ( false === get_option( 'qreuz_user_data_auth_status' ) || "0" === get_option( 'qreuz_user_data_auth_status' ) || "" === get_option( 'qreuz_user_data_auth_status' ) || false === get_option( 'qreuz_user_data_token' ) || false === get_option( 'qreuz_user_data_email' ) ) {
 				/**
 				 * User is not authenticated with the service
 				 */

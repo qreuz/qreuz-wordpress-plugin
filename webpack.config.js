@@ -1,5 +1,6 @@
 const defaultConfig = require("@wordpress/scripts/config/webpack.config");
 const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 
 sharedConfig = {
@@ -39,6 +40,7 @@ module.exports = [
 		},
 		plugins: [
 			...sharedConfig.plugins,
+			new CleanWebpackPlugin(),
 		],
 	},
 	{
@@ -57,5 +59,9 @@ module.exports = [
 				path: path.resolve(__dirname, 'temp/dist'),
 				// `publicPath` is where Webpack will load your bundles from (optional)
 		},
+		plugins: [
+			...sharedConfig.plugins,
+			new CleanWebpackPlugin(),
+		],
 	},
 ];
