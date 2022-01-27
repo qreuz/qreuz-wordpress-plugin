@@ -1,4 +1,5 @@
 <?php
+
 /** Qreuz plugin for WordPress.
 
 Copyright (C) 2020 by Qreuz GmbH <https://qreuz.com/legal-notice>
@@ -15,70 +16,64 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-**/
+ **/
 /** Exit if accessed directly */
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
 	exit;
 }
 
 /** loading admin plugin files */
 require QREUZ_PLUGINPATH . '/admin/activate-function.php';
-
-require QREUZ_PLUGINPATH . '/admin/qreuz-authentification.php';
-require QREUZ_PLUGINPATH . '/admin/qreuz-admin-smart-tracking.php';
 require QREUZ_PLUGINPATH . '/admin/qreuz-admin-tabs.php';
 require QREUZ_PLUGINPATH . '/admin/qreuz-admin-dashboard-widget.php';
+require QREUZ_PLUGINPATH . './admin/qreuz-ajax.php';
 
 /** adding actions */
-add_action( 'admin_enqueue_scripts', array( 'Qreuz_Admin', 'qreuz_admin_load_css' ), 10 );
-add_action( 'admin_enqueue_scripts', array( 'Qreuz_Admin', 'qreuz_admin_load_js' ), 10 );
-add_action( 'admin_menu', array( 'Qreuz_Admin', 'add_menu_page' ), 10 );
-add_action( 'add_meta_boxes', array( 'Qreuz_Admin', 'qreuz_metabox_wc_order' ), 10 );
+add_action('admin_enqueue_scripts', array('Qreuz_Admin', 'qreuz_admin_load_css'), 10);
+add_action('admin_enqueue_scripts', array('Qreuz_Admin', 'qreuz_admin_load_js'), 10);
+add_action('admin_menu', array('Qreuz_Admin', 'add_menu_page'), 10);
+add_action('add_meta_boxes', array('Qreuz_Admin', 'qreuz_metabox_wc_order'), 10);
 // add_action( 'add_meta_boxes', array( 'Qreuz_Admin', 'qreuz_metabox_wc_product' ), 10 );
-add_action( 'admin_enqueue_scripts', array( 'Qreuz_Admin', 'register_qreuz_settings' ), 10 );
-add_action( 'admin_enqueue_scripts', array( 'Qreuz_Admin', 'qreuz_db_update_check' ), 10 );
+add_action('admin_enqueue_scripts', array('Qreuz_Admin', 'register_qreuz_settings'), 10);
+add_action('admin_enqueue_scripts', array('Qreuz_Admin', 'qreuz_db_update_check'), 10);
 /**
  * QREUZ ADMIN CLASS
  */
-class Qreuz_Admin {
+class Qreuz_Admin
+{
 
 	/**
 	 * check if the database version is current
 	 * @param void
 	 * @return void
 	 */
-	public static function qreuz_db_update_check() {
+	public static function qreuz_db_update_check()
+	{
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if (!current_user_can('manage_options')) {
 
 			return;
-			
 		} else {
 
 			require QREUZ_PLUGINPATH . '/admin/qreuz-update-check.php';
-			
 		}
 	}
-	
+
 	/**
-	 * load css for admin / backend view
+	 * load CSS for admin (dashboard) view
+	 * 
 	 * @param void
 	 * @return void
 	 */
-	public static function qreuz_admin_load_css() {
+	public static function qreuz_admin_load_css()
+	{
 
-		/**
-		 * load Qreuz admin CSS
-		 * include file version
-		 */
-
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if (!current_user_can('manage_options')) {
 
 			return;
-
 		} else {
 
-			$css_url  = QREUZ_PLUGINURL . 'assets/css/qreuz-admin.css';
+			$css_url  = QREUZ_PLUGINURL . 'dist/qreuz.admin.css';
 
 			wp_enqueue_style(
 				'qreuz_admin_css',
@@ -87,70 +82,81 @@ class Qreuz_Admin {
 				QREUZ_PLUGINVERSION
 			);
 		}
-
 	}
 
 	/**
-	 * load js for admin / backend view
+	 * load JS for admin (dashboard) view
+	 * 
 	 * @param void
 	 * @return void
 	 */
-	public static function qreuz_admin_load_js() {
-		/**
-		 * load Qreuz admin JS
-		 * include file version
-		 */
+	public static function qreuz_admin_load_js()
+	{
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if (!current_user_can('manage_options')) {
 
 			return;
-			
 		} else {
 
-			$js_url  = QREUZ_PLUGINURL . 'assets/js/qreuz-admin.js';
+			$js_url  = QREUZ_PLUGINURL . 'dist/qreuz.admin.min.js';
+
+			global $qreuz_integrations;
 
 			wp_enqueue_script(
 				'qreuz_admin_js',
 				$js_url,
-				[
-					'jquery',
-					'jquery-ui-tooltip',
-				],
+				array(
+					'wp-element',
+				),
 				QREUZ_PLUGINVERSION,
 				true
 			);
 
+			wp_localize_script(
+				'qreuz_admin_js',
+				'qreuzEnv',
+				array(
+					'_wp_ajax_url'     => admin_url('admin-ajax.php'),
+					'_wpnonce'         => wp_create_nonce('do-ajax-qreuz-admin'),
+					'_wp_http_referer' => wp_get_referer(),
+					'baseurl'          => get_bloginfo('wpurl'),
+					'basepath'         => parse_url(get_bloginfo('wpurl'), PHP_URL_PATH),
+					'public_path'      => QREUZ_PLUGINURL . '/dist/',
+					'integrations'     => $qreuz_integrations,
+				)
+			);
 		}
 	}
 
 	/**
 	 * register plugin menu page
+	 * 
 	 * @param void
 	 * @return void
 	 * */
-	public static function add_menu_page() {
+	public static function add_menu_page()
+	{
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if (!current_user_can('manage_options')) {
 
 			return;
-			
 		} else {
 
 			$qreuz_admin_tabs = new Qreuz_Admin_Tabs();
 
-			$loggedin_in_title = ( '1' === get_option( 'qreuz_userdata_authentification' ) ? 'Account' : 'Login' );
+			$loggedin_in_title = ('1' === get_option('qreuz_user_data_auth_status') ? 'Account' : 'Get started');
 
 			/** load main menu content */
 			$menu_page = add_menu_page(
-				__( 'Qreuz', 'qreuz' ),
+				__('Qreuz', 'qreuz'),
 				'Qreuz',
 				'manage_options',
 				'qreuz',
-				array( $qreuz_admin_tabs, 'qreuz_wp_admin_pages' ),
-				plugins_url( 'qreuz/assets/img/qreuz-white.svg' ),
+				array($qreuz_admin_tabs, 'qreuz_wp_admin_pages'),
+				'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iRWJlbmVfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAzMiAzMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzIgMzI7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsOiNGRkZGRkY7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0yMC40LDI5LjRjLTAuMiwwLTAuNS0wLjEtMC42LTAuNGwtNS43LTEwLjhjLTAuMi0wLjMtMC4xLTAuNywwLjMtMC45YzAuMSwwLDAuMi0wLjEsMC4zLTAuMWg0LjkNCgljMC4yLDAsMC41LDAuMSwwLjYsMC40bDEuNSwyLjljMC44LTEuMSwxLjEtMi41LDEuMS0zLjh2LTJjMC0zLjktMy4xLTctNy03cy03LDMuMS03LDd2MmMwLDIuNywxLjYsNS4yLDQuMSw2LjQNCgljMC4xLDAuMSwwLjIsMC4yLDAuMywwLjNsMi43LDUuMWMwLjIsMC4zLDAuMSwwLjctMC4zLDAuOWMtMC4xLDAtMC4yLDAuMS0wLjMsMC4xaDBDOC41LDI5LjEsMy4yLDIzLjUsMy4yLDE2Ljd2LTINCglDMy4yLDcuNyw4LjksMiwxNS45LDJzMTIuNyw1LjcsMTIuNywxMi43djJjMCwzLjUtMS41LDYuOC00LDkuMmwxLjMsMi41YzAuMiwwLjMsMCwwLjctMC4zLDAuOWMtMC4xLDAtMC4yLDAuMS0wLjMsMC4xTDIwLjQsMjkuNA0KCUwyMC40LDI5LjR6Ii8+DQo8L3N2Zz4NCg==',
 				null
 			);
-			add_action( "load-$menu_page", array( $qreuz_admin_tabs, 'admin_notice_construct' ) );
+			add_action("load-$menu_page", array($qreuz_admin_tabs, 'admin_notice_construct'));
 
 			$submenu_page[1] = add_submenu_page(
 				'qreuz',
@@ -158,53 +164,42 @@ class Qreuz_Admin {
 				$loggedin_in_title,
 				'manage_options',
 				'qreuz',
-				array( $qreuz_admin_tabs, 'qreuz_wp_admin_pages' ),
+				array($qreuz_admin_tabs, 'qreuz_wp_admin_pages'),
 				1
 			);
-			add_action( "load-$submenu_page[1]", array( $qreuz_admin_tabs, 'admin_notice_construct' ) );
+			add_action("load-$submenu_page[1]", array($qreuz_admin_tabs, 'admin_notice_construct'));
 
 			$submenu_page[2] = add_submenu_page(
 				'qreuz',
-				__( 'Qreuz Smart Tracking', 'qreuz' ),
-				'Tracking',
+				__('Tracking', 'qreuz'),
+				'User tracking',
 				'manage_options',
-				'qreuz_menu_smart_tracking',
-				array( $qreuz_admin_tabs, 'qreuz_wp_admin_pages' ),
+				'qreuz&subpage=tracking',
+				array($qreuz_admin_tabs, 'qreuz_wp_admin_pages'),
 				2
 			);
-			add_action( "load-$submenu_page[2]", array( $qreuz_admin_tabs, 'admin_notice_construct' ) );
-
-			$submenu_page[3] = add_submenu_page(
-				'qreuz',
-				__( 'Smart Pricing', 'qreuz' ),
-				'Smart pricing',
-				'manage_options',
-				'qreuz_menu_smart_pricing',
-				array( $qreuz_admin_tabs, 'qreuz_wp_admin_pages' ),
-				3
-			);
-			add_action( "load-$submenu_page[3]", array( $qreuz_admin_tabs, 'admin_notice_construct' ) );
-
+			add_action("load-$submenu_page[2]", array($qreuz_admin_tabs, 'admin_notice_construct'));
 		}
 	}
 
 	/**
 	 *  Load Qreuz meta box on WooCommerce order pages
+	 * 
 	 * @param void
 	 * @return void
 	 * */
-	public static function qreuz_metabox_wc_order() {
+	public static function qreuz_metabox_wc_order()
+	{
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if (!current_user_can('manage_options')) {
 
 			return;
-			
 		} else {
 
 			add_meta_box(
 				'qreuz_meta_box',
 				'Qreuz',
-				array( 'Qreuz_Admin', 'qreuz_metabox_wc_order_callback' ),
+				array('Qreuz_Admin', 'qreuz_metabox_wc_order_callback'),
 				'shop_order',
 				'side',
 				'core'
@@ -214,32 +209,35 @@ class Qreuz_Admin {
 
 	/**
 	 * Qreuz meta box callback for: WooCommerce orders
+	 * 
 	 * @param string $post
 	 * @return void
 	 * */
-	public static function qreuz_metabox_wc_order_callback( $post ) {
+	public static function qreuz_metabox_wc_order_callback($post)
+	{
 
 		require QREUZ_PLUGINPATH . '/admin/qreuz-admin-metabox-order.php';
 
 		global $post;
-		$order = new WC_Order( $post->ID );
+		$order = new WC_Order($post->ID);
 
 		$metabox_order = new Qreuz_Admin_Metabox_Order();
 
-		$metabox_order->qreuz_admin_metabox_order_constructor( $order );
-
+		$metabox_order->qreuz_admin_metabox_order_constructor($order);
 	}
 
 	/**
 	 * Qreuz meta box on WooCommerce product pages
+	 * 
 	 * @param void
 	 * @return void
 	 * */
-	public static function qreuz_metabox_wc_product() {
+	public static function qreuz_metabox_wc_product()
+	{
 		add_meta_box(
 			'qreuz_meta_box_product',
 			'Qreuz',
-			array( 'Qreuz_Admin', 'qreuz_metabox_wc_product_callback' ),
+			array('Qreuz_Admin', 'qreuz_metabox_wc_product_callback'),
 			'product',
 			'side',
 			'core'
@@ -248,82 +246,44 @@ class Qreuz_Admin {
 
 	/**
 	 * Qreuz meta box callback for: WooCommerce products
+	 * 
 	 * @param string $post
 	 * @return void
 	 * */
-	public static function qreuz_metabox_wc_product_callback( $post ) {
+	public static function qreuz_metabox_wc_product_callback($post)
+	{
 
 		echo "placeholder";
 	}
 
 	/**
-	 * register all Qreuz settings
+	 * register all Qreuz plugin settings
+	 * 
 	 * @param void
 	 * @return void
 	 */
-	public static function register_qreuz_settings() {
+	public static function register_qreuz_settings()
+	{
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if (!current_user_can('manage_options')) {
 
 			return;
-			
 		} else {
 			/** settings for smart pricing */
-			register_setting( 'qreuz_smart_pricing', 'qreuz_smart_pricing_premium_category' );
-			register_setting( 'qreuz_smart_pricing', 'qreuz_smart_pricing_premium_percent' );
-			register_setting( 'qreuz_smart_pricing', 'qreuz_smart_pricing_sale_category' );
-			register_setting( 'qreuz_smart_pricing', 'qreuz_smart_pricing_sale_percent' );
-			register_setting( 'qreuz_smart_pricing', 'qreuz_smart_pricing_price_scheme' );
-			/** settings for tracking */
-			register_setting( 'qreuz_smart_tracking', 'qreuz_smart_tracking_active' );
-			register_setting( 'qreuz_smart_tracking', 'qreuz_smart_tracking_low_performance' );
-			/** settings for tracking integrations */
-			register_setting( 'qreuz_tracking_integrations', 'qreuz_ti_ga_property_id' );
-			register_setting( 'qreuz_tracking_integrations', 'qreuz_ti_fb_pixel_id' );
-			register_setting( 'qreuz_tracking_integrations', 'qreuz_ti_bing_uet_id' );
-			register_setting( 'qreuz_tracking_integrations', 'qreuz_ti_gmerch_id' );
+			register_setting('qreuz_smart_pricing', 'qreuz_smart_pricing_premium_category');
+			register_setting('qreuz_smart_pricing', 'qreuz_smart_pricing_premium_percent');
+			register_setting('qreuz_smart_pricing', 'qreuz_smart_pricing_sale_category');
+			register_setting('qreuz_smart_pricing', 'qreuz_smart_pricing_sale_percent');
+			register_setting('qreuz_smart_pricing', 'qreuz_smart_pricing_price_scheme');
+			/** settings for user tracking */
+			register_setting('qreuz_tracking', 'qreuz_tracking_method');
 			/** settings for userdata */
-			register_setting( 'qreuz_userdata', 'qreuz_userdata_toqen' );
-			register_setting( 'qreuz_userdata', 'qreuz_userdata_qkey' );
-			register_setting( 'qreuz_userdata', 'qreuz_userdata_email' );
-			register_setting( 'qreuz_userdata', 'qreuz_userdata_authentification' );
+			register_setting('qreuz_user_data', 'qreuz_user_data_toqen');
+			register_setting('qreuz_user_data', 'qreuz_user_data_qkey');
+			register_setting('qreuz_user_data', 'qreuz_user_data_email');
+			register_setting('qreuz_user_data', 'qreuz_user_data_auth_status');
 		}
 	}
 
-	/**
-	 * Offers a method to add tooltips in the backend
-	 * @param string $text
-	 * @param string $alt - define the version of the helptip
-	 * @param string $html - defines if the output shall be echoed or returned
-	 * @return string
-	 */
-	public static function load_helptip( $text, $alt = null, $html = null ) {
-		if ( $text && null === $html ) {
-			echo '<span class="qreuz_admin_helptip" title="' . esc_attr( $text ) . '">';
-
-			if ( 'thin' === $alt ) {
-				echo ' [ <b>?</b> ] ';
-			} else {
-				echo '<span class="dashicons dashicons-editor-help"></span>';
-			}
-			echo '</span>';
-
-			return;
-			
-		} elseif ( $text && 'html' === $html ) {
-			$helptip_output = '<span class="qreuz_admin_helptip" title="' . esc_attr( $text ) . '">';
-
-			if ( 'thin' === $alt ) {
-				$helptip_output .= ' [ <b>?</b> ] ';
-			} else {
-				$helptip_output .= '<span class="dashicons dashicons-editor-help"></span>';
-			}
-
-			$helptip_output .= '</span>';
-
-			return $helptip_output;
-
-		}
-	}
-
+	// End class.
 }

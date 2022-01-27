@@ -28,11 +28,13 @@ add_action( 'wp_dashboard_setup', array( 'Qreuz_Admin_Dashboard_Widget', 'load_q
 
 /**
  * Qreuz Admin Dashboard Widget
+ * 
  */
 class Qreuz_Admin_Dashboard_Widget {
 
 	/**
-	 * load the admin dashboard widget
+	 * Load the admin dashboard widget.
+	 * 
 	 * @param void
 	 * @return void
 	 */
@@ -48,38 +50,52 @@ class Qreuz_Admin_Dashboard_Widget {
 	}
 
 	/**
-	 * echoes the content for the pricing dashboard widget
+	 * Echoes the content for the pricing dashboard widget.
+	 * 
 	 * @param void
 	 * @return void
 	 */
 	public static function qreuz_admin_dashboard_widget_content() {
-		
-		echo '
-			<div class="qreuz_admin_dashboard_widget">
-				<p>Questions about how to get the most out of Qreuz? Check out our website at <a href="https://qreuz.com" target="_blank">https://qreuz.com</a></p>
-				<p>We value your feedback. Please let us know if you have any problems or if you have an idea what feature we could add to our service. Get in contact at <b>hello@qreuz.com</b></p>
-				<p>You are currently using the Qreuz WordPress plugin in version ' . QREUZ_PLUGINVERSION . '.</p>';
-		
-				if ( '1' === get_option( 'qreuz_userdata_authentification' ) ) {
-					self::get_newsfeed();
-				}
-				
-		echo '
-			</div>';
 
-		echo '
-			<div class="qreuz_admin_dashboard_widget_footer">
-			<ul>
-				<li>
-				<a href="https://qreuz.com" target="_blank">Qreuz.com<span aria-hidden="true" class="dashicons dashicons-external"></span></a>
-				</li>
-				<li>
-				<a href="https://qreuz.com/privacy" target="_blank">Privacy policy<span aria-hidden="true" class="dashicons dashicons-external"></span></a>
-				</li>
-			</ul>
-			</div>';
+		if ( ! current_user_can( 'manage_options' ) ) {
+
+			return;
+			
+		} else {
+		
+			echo '
+				<div class="qreuz_admin_dashboard_widget">
+					<p>Questions about how to get the most out of Qreuz? Check out our website at <a href="https://qreuz.com" target="_blank">https://qreuz.com</a></p>
+					<p>We value your feedback. Please let us know if you have any problems or if you have an idea what feature we could add to our service. Get in contact at <b>hello@qreuz.com</b></p>
+					<p>You are currently using the Qreuz WordPress plugin in version ' . QREUZ_PLUGINVERSION . '.</p>';
+			
+					if ( '1' === get_option( 'qreuz_user_data_auth_status' ) ) {
+						self::get_newsfeed();
+					}
+					
+			echo '
+				</div>';
+
+			echo '
+				<div class="qreuz_admin_dashboard_widget_footer">
+				<ul>
+					<li>
+					<a href="https://qreuz.com" target="_blank">Qreuz.com<span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					</li>
+					<li>
+					<a href="https://qreuz.com/privacy" target="_blank">Privacy policy<span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					</li>
+				</ul>
+				</div>';
+		}
 	}
 
+	/**
+	 * Loads the newsfeed with latest news from Qreuz.
+	 * 
+	 * @param void
+	 * @return void
+	 */
 	private static function get_newsfeed() {
 
 		$feed_url = 'https://qreuz.com/feed/updates/';
@@ -111,4 +127,5 @@ class Qreuz_Admin_Dashboard_Widget {
 		echo '</div>';
 	}
 
+	// End class.
 }

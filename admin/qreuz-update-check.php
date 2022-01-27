@@ -45,7 +45,6 @@ class Qreuz_Update_Check {
 			if ( get_site_option( 'qreuz_db_version' ) !== QREUZ_PLUGINVERSION ) {
 				Qreuz_Database::init_dbs();
 			}
-
 		}
 	}
 }

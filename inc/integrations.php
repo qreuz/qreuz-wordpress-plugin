@@ -25,10 +25,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Qreuz_Integrations {
 
 	/** @var bool plugin environment variable: WooCommerce */
-	public $qreuz_envv_wpp_woocommerce;
+	public $woocommerce;
 
 	/** @var bool plugin environment variable: WooCommerce Product Feeds */
-	public $qreuz_envv_wpp_woocommerce_gpf;
+	public $woocommerce_google_product_feeds;
 
 	public function __construct() {
 
@@ -41,25 +41,25 @@ class Qreuz_Integrations {
 	 * Integration for the plugin: WooCommerce
 	 * @param void
 	 * @return void
-	 * @sets: $qreuz_envv_wpp_woocommerce
+	 * @sets: $woocommerce
 	 */
 	private function qreuz_integrations_woocommerce() {
 
 		if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 
-			$this->qreuz_envv_wpp_woocommerce = true;
+			$this->woocommerce = true;
 
 			require QREUZ_PLUGINPATH . '/inc/tracker/woocommerce/woocommerce-tracking.php';
 
-				$qreuz_woocommerce_tracking = new Qreuz_WooCommerce_Tracking();
+			$qreuz_woocommerce_tracking = new Qreuz_WooCommerce_Tracking();
 
-				add_action( 'woocommerce_add_to_cart', array( $qreuz_woocommerce_tracking, 'qreuz_track_woocommerce_atc' ), 10, 3 );
+			add_action( 'woocommerce_add_to_cart', array( $qreuz_woocommerce_tracking, 'qreuz_track_woocommerce_atc' ), 10, 3 );
 
-				add_action( 'woocommerce_thankyou', array( $qreuz_woocommerce_tracking, 'qreuz_track_woocommerce_thankyou' ), 10, 1 );
+			add_action( 'woocommerce_thankyou', array( $qreuz_woocommerce_tracking, 'qreuz_track_woocommerce_thankyou' ), 10, 1 );
 
 		} else {
 
-			$this->qreuz_envv_wpp_woocommerce = false;
+			$this->woocommerce = false;
 
 		}
 
@@ -69,17 +69,17 @@ class Qreuz_Integrations {
 	 * Integration for the plugin: WooCommerce Product Feeds
 	 * @param void
 	 * @return void
-	 * @sets: $qreuz_envv_wpp_woocommerce_gpf
+	 * @sets: $woocommerce_google_product_feeds
 	 */
 	private function qreuz_integrations_woocommerce_product_feeds() {
 
 		if ( in_array( 'woocommerce-product-feeds/woocommerce-gpf.php.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 
-			$this->qreuz_envv_wpp_woocommerce_gpf = true;	
+			$this->woocommerce_google_product_feeds = true;	
 
 		} else {
 
-			$this->qreuz_envv_wpp_woocommerce_gpf = false;
+			$this->woocommerce_google_product_feeds = false;
 
 		}
 	}

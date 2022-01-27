@@ -20,7 +20,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
 /**
  * Database functions for the Qreuz plugin
  */
@@ -40,9 +39,8 @@ class Qreuz_Database {
 		self::setup_db(
 			'smart_pricing_prices',
 			array(
-				//'id'     => "mediumint(9) NOT NULL AUTO_INCREMENT",
-				'cat_id' => "mediumint(9) NOT NULL",
-				'price'  => "decimal(6,2) NULL",
+				'cat_id' => 'mediumint(9) NOT NULL',
+				'price'  => 'decimal(6,2) DEFAULT NULL',
 			),
 			'cat_id',
 			QREUZ_PLUGINVERSION
@@ -161,7 +159,7 @@ class Qreuz_Database {
 				$db_setup_query .= $key . ' ' . $value . ',';
 			}
 
-			$sql = "CREATE TABLE $table_name (
+			$sql = "CREATE TABLE IF NOT EXISTS $table_name (
 				$db_setup_query
 				PRIMARY KEY  ($primary_key)
 				) $charset_collate;";

@@ -23,16 +23,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Qreuz_Tracking_Datapoints {
 
 	/**
-	 * get the url of the current page view
-	 * @param string $baseurl
+	 * Returns the url of the current page view.
+	 *
+	 * @param mixed $baseurl
 	 * @return string
 	 */
-	public function qreuz_tdp_url( $baseurl = false ) {
+	public static function qreuz_tdp_url( $baseurl = false ) {
 
 		if ( true === $baseurl ) {
 			$url = esc_url_raw( ( isset( $_SERVER['HTTPS'] ) ? 'https' : 'http' ) . "://$_SERVER[HTTP_HOST]" );
-		} elseif ( 'pure' === $baseurl )  {
+		} elseif ( 'pure' === $baseurl ) {
 			$url = esc_url_raw( $_SERVER['HTTP_HOST'] );
+			$url = str_replace( array( 'http://', 'https://' ), '', $url );
 		} else {
 			$url = esc_url_raw( ( isset( $_SERVER['HTTPS'] ) ? 'https' : 'http' ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" );
 		}
@@ -45,7 +47,7 @@ class Qreuz_Tracking_Datapoints {
 	 * @param void
 	 * @return string
 	 */
-	public function qreuz_tdp_user_agent() {
+	public static function qreuz_tdp_user_agent() {
 
 		return sanitize_text_field( $_SERVER['HTTP_USER_AGENT'] );
 
@@ -56,7 +58,7 @@ class Qreuz_Tracking_Datapoints {
 	 * @param void
 	 * @return string
 	 */
-	public function qreuz_tdp_server_ip() {
+	public static function qreuz_tdp_server_ip() {
 
 		$ip = esc_url_raw( $_SERVER['SERVER_ADDR'] );
 
@@ -68,7 +70,7 @@ class Qreuz_Tracking_Datapoints {
 	 * @param void
 	 * @return array
 	 */
-	public function qreuz_tdp_ip() {
+	public static function qreuz_tdp_ip() {
 
 		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
 			$ip = esc_url_raw( $_SERVER['HTTP_CLIENT_IP'] );
@@ -80,10 +82,10 @@ class Qreuz_Tracking_Datapoints {
 
 		$ip = str_replace( array( 'http://', 'https://' ), '', $ip );
 
-		$return['hip'] = crc32( $ip );
+		$return['hip'] = crc32( str_pad( $ip, 32, wp_salt(), STR_PAD_BOTH ) );
 
-		$aip_array = explode( '.', $ip, 4 );
-		$aip_array[3] = '0';
+		$aip_array     = explode( '.', $ip, 4 );
+		$aip_array[3]  = '0';
 		$return['aip'] = implode( '.', $aip_array );
 
 		return $return;
@@ -94,7 +96,7 @@ class Qreuz_Tracking_Datapoints {
 	 * @param void
 	 * @return string
 	 */
-	public function qreuz_tdp_referrer() {
+	public static function qreuz_tdp_referrer() {
 
 		$ref = '';
 		if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
@@ -108,7 +110,7 @@ class Qreuz_Tracking_Datapoints {
 	 * @param void
 	 * @return void
 	 */
-	public function qreuz_tdp_custom_dimensions() {
+	public static function qreuz_tdp_custom_dimensions() {
 
 		/**
 		* tbd
@@ -129,7 +131,7 @@ class Qreuz_Tracking_Datapoints {
 			$encoded_data_strings[ $key ] = (string) mb_convert_encoding( $parameter, 'UTF-8', mb_detect_encoding( $parameter ) );
 			$encoded_data_strings[ $key ] = rawurlencode( $encoded_data_strings[ $key ] );
 		}
-		
+
 		return $encoded_data_strings;
 	}
 

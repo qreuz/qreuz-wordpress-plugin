@@ -53,6 +53,41 @@ class Qreuz_Smart_Pricing {
 	}
 
 	/**
+	 * Updates prices in database.
+	 * 
+	 * @param $prices
+	 * @return void
+	 */
+	public function update_prices_in_db( $product_categories ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			/**
+			 *  User not allowed to access.
+			 */
+			$response =  array(
+				'success' => false,
+			);
+
+			wp_die( wp_json_encode( $response ) );
+		} else {
+			/**
+			 * User ok. Proceed.
+			 */
+			$price_array = array();
+
+
+			foreach ( $product_categories as $product_category => $array ) {
+
+				$value = sanitize_text_field( $array['price'] );
+
+				$price_array[ $array['term_id'] ] = '' !== $value ? $value : null;
+			}
+
+			/** store updated prices to database */
+			Qreuz_Database::insert_data_2col( 'smart_pricing_prices', $price_array, 'cat_id', 'price' );
+		}
+	}
+
+	/**
 	 * initializes the update prices logic
 	 * @param void
 	 * @return void
@@ -61,11 +96,14 @@ class Qreuz_Smart_Pricing {
 
 		if ( ! check_ajax_referer( 'qreuz-sync-prices' ) || ! current_user_can( 'manage_options' ) ) {
 
-			wp_die();
-			
+			/**
+			 *  No valid ajax request or user not allowed to access.
+			 */
+			$response = array(
+				'success' => false,
+			);
+			wp_die( wp_json_encode( $response ) );
 		} else {
-
-			$current_time = sanitize_text_field( $_POST['qreuz_current_time'] );
 
 			/**
 			 * Get array of simple product IDs and loop over them

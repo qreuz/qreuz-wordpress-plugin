@@ -30,11 +30,9 @@ class Qreuz_Tracker_Events {
 		$qreuz_tracker_instance                      = new Qreuz_Tracker();
 		$qreuz_tracker_instance->tracking_parameters = array();
 
-		$qreuz_tracker_instance->tracking_parameters['qtt'] = 'ev';
 		//$qreuz_tracker_instance->tracking_parameters['ec'] = $event_category;
 		$qreuz_tracker_instance->tracking_parameters['qea'] = $event_action;
 		//$qreuz_tracker_instance->tracking_parameters['el'] = $event_label;
-		$qreuz_tracker_instance->tracking_parameters['qev'] = $event_value;
 		$qreuz_tracker_instance->tracking_parameters['qev'] = $event_value;
 
 		foreach ( $product_data as $product_data_key => $product_data_data ) {
@@ -43,7 +41,7 @@ class Qreuz_Tracker_Events {
 
 		$qreuz_tracker_instance->qreuz_prepare_request();
 
-		$qreuz_tracker_instance->qreuz_tracker_push( $qreuz_tracker_instance->tracking_parameters );
+		$qreuz_tracker_instance->qreuz_tracker_push( $qreuz_tracker_instance->tracking_parameters, 'ev' );
 		$qreuz_tracker_instance->tracking_parameters = array();
 
 		return;
@@ -53,7 +51,6 @@ class Qreuz_Tracker_Events {
 		$qreuz_tracker_instance                      = new Qreuz_Tracker();
 		$qreuz_tracker_instance->tracking_parameters = array();
 
-		$qreuz_tracker_instance->tracking_parameters['qtt'] = 'tr';
 		//$qreuz_tracker_instance->tracking_parameters['ec'] = $event_category;
 		// $qreuz_tracker_instance->tracking_parameters['qea'] = 'purchase';
 		//$qreuz_tracker_instance->tracking_parameters['el'] = $event_label;
@@ -65,7 +62,7 @@ class Qreuz_Tracker_Events {
 
 		$qreuz_tracker_instance->qreuz_prepare_request();
 
-		$qreuz_tracker_instance->qreuz_tracker_push( $qreuz_tracker_instance->tracking_parameters );
+		$qreuz_tracker_instance->qreuz_tracker_push( $qreuz_tracker_instance->tracking_parameters, 'tr' );
 		$qreuz_tracker_instance->tracking_parameters = array();
 
 		return;

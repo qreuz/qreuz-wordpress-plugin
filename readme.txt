@@ -1,52 +1,53 @@
 === Qreuz ===
 Contributors: matthiasreinholz, qreuz
-Tags: analytics, business intelligence, tracking, marketing automation, e-commerce, online shop, woocommerce, google analytics, facebook pixel, bing ads, google ads
+Tags: cookie-free tracking,marketing data platform,business intelligence,webtracking,analytics,tracking,e-commerce data,woocommerce tracking,conversion tracking,google analytics,facebook pixel,facebook conversions api
 Requires at least: 4.9
-Tested up to: 5.4
-Stable tag: trunk
+Tested up to: 5.9
+Stable tag: 0.1.0
 Requires PHP: 7.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Qreuz enables automated business growth on your WooCommerce store. Elevate your game with sales tracking, inventory optimization, and AI-powered insights.
+Qreuz is the marketing data platform for your website. Enabling cookie-free tracking for WordPress and WooCommerce.
 
 == Description ==
 
-Qreuz's official plugin for WordPress enables automated business growth on your WooCommerce store. Get with behavioral user tracking, conversion tracking and analytics, as well as marketing automation on your WooCommerce store. At a glance:
+Qreuz's official plugin for WordPress enables cookie-free tracking. Connect your WordPress to the Qreuz marketing data platform and enter the new cookie-free era of visitor tracking. At a glance:
 
-= Get started with automated business growth for WooCommerce. =
+= Cookie-free tracking. =
 
-- Automatically track conversions, revenue, and interactions of your customers.
-- Understand which marketing campaigns drive your success and which fail.
-- Grow your sales by AI-powered inventory and pricing optimization.
-
-= Qreuz adds smart automation, automated growth, and business intelligence to your WooCommerce. = 
-
-- WooCommerce sales tracking: Capture sales automatically, create your sales data pipeline, and get conversion insights.
-- Add-to-cart tracking: Automated ATC tracking, build your remarketing lists, optimize your sales funnel.
-- Behavioral tracking: Understand your customers' behavior, identify conversion killers, double-down on sweet spots.
-- Inventory optimization: Upsell your long-tail, automate catelog sales, dig out hidden treasures in your catalog.
-- Automate pricing: Increase conversion rates, grow your average cart values, price your products based on algorithms.
-- Dynamic pricing: Dynamically adjust prices and sales offers, audience-based price levels, real-time price updates.
-
-= Track the website metrics that you really need. Get cleaner data than ever before. Out of the box. =
-
+- Yes, really cookie-free!
+- Finally, collecting clean and rich marketing data that respects the privacy of your customers.
+- Open-source server-side tracking, free from cookies, and hidden background connections.
 - Increase your page speed by integrating a single lightweight tracking call that can replace existing tracking pixels.
-- Use our service to forward enriched data to the tools that you already use (e.g. Google Analytics, Google Ads, Facebook Pixel, or Bing Ads).
-- Respect your visitor's privacy: works without tracking cookies.
 
-= Integrates with WooCommerce. Get deeper insights and automate your store. =
+= Connectors =
 
-- Get smart insights about your WooCommerce orders, customers, and products: understand what drives your performance and optimize your marketing.
-- Automatically optimize the prices on your WooCommerce store or manage prices in bulk. Smart pricing can work based on predefined rules.
-- Track your store performance, sales, product performance, add-to-cart events, and other visitor and customer interactions. 
-- Dynamic pricing: use our service to adjust your WooCommerce product's prices dynamically based on audience and other factors.
+- Connect your data to marketing services with Qreuz Connectors.
+- Manage the flow of your user data and securely channel privacy-safe portions of your data.
+- Examples: Google Analytics, Facebook Ads, Google Ads, Pinterest Ads, or Taboola.
+
+= Qreuz marketing data platform. =
+
+- Full control over your tracking data within the Qreuz marketing data platform.
+- Track unlimited page views for free.
+- CSV exports available
+
+= Integrates with WooCommerce. Get deeper insights with enhanced tracking. =
+
+Get smart insights about your WooCommerce orders, customers, and products: understand what drives your performance and optimize your marketing. Track your store performance, sales, product performance, add-to-cart events, and other visitor and customer engagements.
+
+- Automatically track conversions, revenue, and engagements of your customers.
+- Add-to-cart tracking and sales tracking optimized for marketing performance analytics.
+- No complicated tracking set-up required, works out of the box.
+
+Get started with Qreuz today. Track the website metrics that you really need. Get cleaner and richer marketing data than ever before.
 
 = Plugin Support =
 
 To get support, please send an email to <a href="mailto:support@qreuz.com">support@qreuz.com</a>.
 
-Find more information at <a href="https://qreuz.com/qreuz-wordpress-plugin/">https://qreuz.com/qreuz-wordpress-plugin/</a>.
+Find more information at <a href="https://qreuz.com/">https://qreuz.com/</a>.
 
 = Development = 
 
@@ -55,7 +56,7 @@ You can follow our development, report bugs, and ask for new features on our off
 == Installation ==
 
 = Minimum Requirements =
-* PHP 7.2 or greater is recommended
+* PHP 7.3 or greater is recommended
 
 = Qreuz User Account =
 Get started by creating your user account at Qreuz. Registration is free and Qreuz offers a free tier.
@@ -68,11 +69,11 @@ Thank you for your interest in supporting the development of Qreuz! Please get i
 
 = Does this plugin track page views? =
 
-Yes, the plugin can track page views and act as an interface to the Qreuz service.
+Yes, the plugin can track page views and forward privacy-optimized data the Qreuz marketing data platform.
 
 = Can I forward data to my Google Analytics account or will I need another plugin for that? =
 
-The Qreuz service can forward your tracking data to Google Analytics. You can utilize this plugin as an interface to the Qreuz service and activate the Google Analytics integration. By doing so, you won't need any other implementation of Google Analytics on your website anymore.
+The Qreuz marketing data platform can forward specified, privacy-safe portions of your tracking data to Google Analytics. You can utilize this plugin as an interface to the Qreuz service and activate the Google Analytics connector. By doing so, you won't need any other implementation of Google Analytics on your website anymore.
 
 = Does this plugin use cookies to track user behavior? =
 
@@ -80,25 +81,58 @@ No, the Qreuz plugin does not utilize tracking cookies. We do not store any mark
 
 = Do I have to pay to use this plugin? =
 
-No, the Qreuz plugin is free and open source. This plugin also acts as an interface to the Qreuz service and therefore some features will only work if you login/register to our service. Registration is free and we also offer a free tier. However, there may be features that are restricted to the users of paid plans. You can find our pricing and plans overview at <a href="https://qreuz.com/plans">https://qreuz.com/plans</a>.
+No, the Qreuz plugin is free and open source. This plugin also acts as an interface to the Qreuz marketing data platform. Therefore, some features will only work if you login/register to our service. Registration is free and we also offer a free tier for your website. However, there may be features that are restricted to the users of paid plans. You can find our pricing and plans overview at <a href="https://qreuz.com/plans">https://qreuz.com/plans</a>.
 
 == Screenshots ==
 
-1. Track website metrics
-2. Automate prices in WooCommerce shops
+1. Cookie-free tracking
+2. Qreuz marketing data platform
 
 == Changelog ==
 
-= 1.2.0 2020-07-15 =
+= 0.1.0 2022-01-25 = 
+* Tweak - disclose WordPress 5.9 compatibility
+
+= 0.0.17 2022-01-24 =
+* Fix - Fix in Qreuz account registration process
+* Fix - Adjust texts within admin interface
+
+= 0.0.16 2021-10-16 = 
+* Fix - Get event tracking for WooCommerce up again
+* Fix - Get transaction tracking for WooCommerce up again
+* Fix - Adapt latest changes in Qreuz API
+
+= 0.0.15.1 2021-04-07 =
+* Fix - Disable tracking after logout
+
+= 0.0.15 2021-03-15 =
+* Tweak - Improve Qreuz service login procedure
+* Tweak - Improve backend experience and add new design
+* Tweak - disclose WordPress 5.7 compatibility
+
+= 0.0.14 2020-09-24 = 
+* Beta Feature - WooCommerce Toolbox feature: synchronize customer orders
+* Tweak - Admin design optimizations for WordPress 5.5
+* Tweak - Migrate from jQuery to React based tracking solution
+* Tweak - Implement dynamic JS publicPath and add compatibility with custom wp-content folder names
+* Tweak - Add compatibility with subdirectory based multisite installations
+* Tweak - Optimize Qreuz service registration / login screen
+
+= 0.0.13 2020-08-10 =
+* Feature - implement Qreuz account and property creation from WordPress admin
+* Feature - added automated pricing for WooCommerce product categories
+* Tweak - refactoring of admin interface with React
+
+= 0.0.12 2020-07-15 =
 * Feature - implement new logic to sign up to the service
 * Tweak - optimize tracking protocol
 * Tweak - new text for our readme.txt
 
-= 1.1.1 2020-04-30 =
+= 0.0.11 2020-04-30 =
 * Tweak - disclose WordPress 5.4 compatibility
 * Tweak - added official GitHub repo for this plugin as resource
 
-= 1.1.0 2020-04-29 =
+= 0.0.10 2020-04-29 =
 * Plugin initial public release / release on WordPress.org.
 * Tweak - Smart tracking initial release.
 * Tweak - Smart pricing initial release.
@@ -106,29 +140,40 @@ No, the Qreuz plugin is free and open source. This plugin also acts as an interf
 * Fix - optimized capability checks for all admin related functions.
 * Fix - removed insecure remote call.
 
-= 1.0.6 2020-04-23 =
+= 0.0.9.beta 2020-04-23 =
 * internal development release
 
-= 1.0.5 2020-02-29 =
+= 0.0.8.beta 2020-02-29 =
 * internal development release
 
-= 1.0.4 2020-02-25 =
+= 0.0.7.beta 2020-02-25 =
 * internal development release
 
-= 1.0.3 2020-02-19 =
+= 0.0.6.beta 2020-02-19 =
 * internal development release
 
-= 1.0.2 2020-02-05 =
+= 0.0.5.beta 2020-02-05 =
 * internal development release
 
-= 1.0.1 2020-01-15 =
+= 0.0.4.beta 2020-01-15 =
 * internal development release
 
-= 1.0.0 2020-01-01 =
+= 0.0.3.beta 2020-01-01 =
 * internal development release
+
+= 0.0.2.alpha 2019-10-07 =
+* internal development release
+
+= 0.0.1.alpha 2019-09-19 =
+* internal development release
+* Tweak - enhance server-side tracking protocol
+
+= 0.0.0.alpha 2019-09-13 = 
+* internal development release
+* Feature - added cookie-free tracking
 
 
 == Upgrade Notice ==
 
-= 1.0.0 =
+= 0.0.0.alpha =
 This version is the initial release.

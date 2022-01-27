@@ -21,385 +21,74 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/** adding actions */
-$qreuz_admin_tabs = new Qreuz_Admin_Tabs();
-add_action( 'admin_post_' . $qreuz_admin_tabs->qreuz_wp_admin_page, array( $qreuz_admin_tabs, 'process_form' ) );
+/**
+ * adding AJAX actions
+ */
 
 $obj_qreuz_smart_pricing = new Qreuz_Smart_Pricing();
 add_action( 'wp_ajax_qreuz_do_synchronize_prices', array( $obj_qreuz_smart_pricing, 'qreuz_update_prices_init' ), 10 );
 
-$obj_qreuz_authentification = new Qreuz_Authentification();
-add_action( 'wp_ajax_qreuz_do_authentification_start', array( $obj_qreuz_authentification, 'auth_start' ), 10 );
-add_action( 'wp_ajax_qreuz_do_authentification_toqen', array( $obj_qreuz_authentification, 'auth_toqen' ), 10 );
-add_action( 'wp_ajax_qreuz_authentification_toqen_successful', array( $obj_qreuz_authentification, 'auth_success' ), 10 );
-add_action( 'wp_ajax_qreuz_do_logout', array( $obj_qreuz_authentification, 'logout' ), 10 );
-
-$obj_qreuz_smart_tracking = new Qreuz_Admin_Smart_Tracking();
-add_action( 'wp_ajax_qreuz_do_update_integration_settings', array( $obj_qreuz_smart_tracking, 'update_integration_settings' ), 10 );
-
+/**
+ * Class for Qreuz plugin admin tab content
+ * 
+ */
 class Qreuz_Admin_Tabs {
 
-	public $qreuz_wp_admin_page = 'qreuz_smart_pricing';
-
 	/**
-	 * Qreuz admin pages content
+	 * Load Qreuz admin pages content
+	 * 
 	 * @param void
 	 * @return void
 	 * */
 	public function qreuz_wp_admin_pages() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
+
 			wp_die();
 		}
 
-		$page     = sanitize_text_field( $_GET['page'] );
+		$page = sanitize_text_field( $_GET['page'] );
 
 		global $qreuz_integrations;
+
+		/**
+		 * Load pageblock: preheader (wrapper)
+		 * */
 		$this->load_pageblock_preheader();
-		echo '<h1 style="visibility:hidden;display:none;"></h1>';
+		echo '<h1 style="visibility:hidden;display:none;"></h1>'; // load hidden h1 element to fix spacing
+
+		/**
+		 * Load pageblock: header
+		 * */
 		$this->load_pageblock_header( $page );
 
 		$redirect = rawurlencode( remove_query_arg( 'notice', $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) );
 
-		switch ( $page ) {
-			case 'qreuz_menu_smart_pricing':
-				if ( $qreuz_integrations->qreuz_envv_wpp_woocommerce ) {
-					$this->load_page_smart_pricing( $redirect );
-				} else {
-					$this->load_page_missing_integration( 'WooCommerce' );
-				}
-				break;
-			case 'qreuz_menu_smart_tracking':
-				$this->load_page_smart_tracking( $redirect );
-				break;
-			default:
-				$page = 'qreuz';
-				$this->load_page_start();
-		}
+		/**
+		 * Load pageblock: content
+		 * */
+		$this->load_pageblock_content();
 
-		$this->load_pageblock_sidebar( $page );
-
+		/**
+		 * Load pageblock: footer
+		 * */
 		$this->load_pageblock_footer();
-
 	}
 
 	/**
-	 * loading the page content 'missing integration' if accessed without plugin installed
-	 * @param string $plugin
-	 * @return void
-	 */
-	private function load_page_missing_integration( $plugin ) {
-		$this->load_pageblock_description(
-			'This feature of our plugin has been designed to work with <b>' . $plugin . '</b><br />
-			Please activate ' . $plugin . ' and come back to use this feature.'
-		);
-	}
-
-	/**
-	 * loading the default page
+	 * Loading the preheader (wrapper).
+	 * 
 	 * @param void
 	 * @return void
 	 */
-	private function load_page_start() {
-
-		echo '<div class="qreuz_admin_section qreuz_admin_section_login">';
-		echo '<h2>Connect your Qreuz account</h2>';
-
-		/** row: already logged in */
-
-		if ( '1' === get_option( 'qreuz_userdata_authentification' ) ) {
-			
-			echo '<p id="qreuz_logged_in_info"></p>';
-
-		}
-
-		/**
-		 * Field: Toqen
-		 */
-
-		$toqen_disabled_class = ( ! get_option( 'qreuz_userdata_toqen' ) ? '' : 'disabled' );
-
-		echo '<form action="" method="POST" enctype="multipart/form-data" id="qreuz_authentification_toqen" class="' . $toqen_disabled_class . '">';
-
-		echo '<input type="hidden" name="form" id="form" value="auth_toqen" />';
-		wp_nonce_field( 'qreuz_authentification_toqen' ); 
-
-		echo '<table>';
-
-		/** row: toqen */
-		echo '<tr>';
-		echo '<td>';
-		echo '<input type="text" name="qreuz_userdata_toqen" value="' . esc_attr( get_option( 'qreuz_userdata_toqen' ) ) . '" placeholder="Enter your access token" />';
-		submit_button( __( 'Save Token', 'qreuz' ) );
-		echo '<p id="success" class="hidden"></p>';
-		echo '</td></tr>';
-
-		echo '</table>';
-
-		echo '</form>';
-		echo '</div>'; // close qreuz_admin_section
-
-	}
-
-	/**
-	 * loading the page smart pricing
-	 * @param string $redirect
-	 * @return void
-	 */
-	private function load_page_smart_pricing( $redirect ) {
-
-		$product_cats = get_terms(
-			[
-				'taxonomy' => 'product_cat',
-				'hide_empty' => false,
-			]
-		);
-
-		// $this->load_pageblock_description('');
-
-		/**
-		 * Section: Synchronize
-		 */
-		echo '<div class="qreuz_admin_section">';
-		echo '<h2>Synchronize prices</h2>';
-
-		echo '<form action="" method="POST" enctype="multipart/form-data" id="qreuz_smart_pricing_synchronize">';
-		wp_nonce_field( 'qreuz-sync-prices' );
-		echo '<input type="submit" value="Synchronize prices" class="button button-primary qreuz_synchronize">';
-
-		Qreuz_Admin::load_helptip(
-			'Use this to synchronize the prices across your WooCommerce store with the pricing logic you have defined below. Depending on the number of products in your WooCommerce database, this may take some time.'
-		);
-
-		echo '</form>';
-		echo '</div>'; // close qreuz_admin_section
-
-		/**
-		 * Section: Settings
-		 */
-		echo '<div class="qreuz_admin_section">';
-		echo '<h2>Settings</h2>';
-		echo '<form method="post" action="options.php">';
-		settings_fields( 'qreuz_smart_pricing' );
-		do_settings_sections( 'qreuz_smart_pricing' );
-		echo '<table class="form-table qreuz_admin_smart_pricing">';
-		echo '<tbody>';
-
-		/**
-		 * row for: premium category
-		 */
-		echo '<tr>';
-		echo '<th scope="row">Premium category</th>';
-		echo '<td>';
-		Qreuz_Admin::load_helptip(
-			'Set a category to be defined as "premium". The prices of products in this category will be increased by the percentage specified below.'
-		);
-		echo '<select name="qreuz_smart_pricing_premium_category">';
-		echo '<option value="">' . esc_attr( __( '- none', 'qreuz' ) ) . '</option>';
-			foreach ( $product_cats as $product_cat ) {
-
-				$selected = get_option( 'qreuz_smart_pricing_premium_category' ) == $product_cat->term_id ? 'selected' : '';
-
-				echo '<option value="' . esc_attr( $product_cat->term_id ) . '" ' . esc_attr( $selected ) . '>' . esc_attr( $product_cat->name ) . '</option>';
-			}
-		echo '</td></tr>';
-
-		/**
-		 * row for: premium percent
-		 */
-		echo '<tr>';
-		echo '<th scope="row">Premium percent</th>';
-		echo '<td>';
-		Qreuz_Admin::load_helptip(
-			'Set a percentage that will be added to the price of products in the premium category.'
-		);
-		echo '<input type="text" name="qreuz_smart_pricing_premium_percent" value="' . esc_attr( get_option( 'qreuz_smart_pricing_premium_percent' ) ) . '" />';
-		echo '<span class="qreuz_admin_unit">%</span>';
-		echo '</td></tr>';
-
-		/**
-		 * row for: sale category
-		 */
-		echo '<tr>';
-		echo '<th scope="row">Sale category</th>';
-		echo '<td>';
-		Qreuz_Admin::load_helptip(
-			'Set a category that will be used to put products on sale. Products with this category will automatically have their prices set on sale based on the percentage specified below.'
-		);
-		echo '<select name="qreuz_smart_pricing_sale_category">';
-		echo '<option value="">' . esc_attr( __( '- none', 'qreuz' ) ) . '</option>';
-			foreach ( $product_cats as $product_cat ) {
-
-				$selected = get_option( 'qreuz_smart_pricing_sale_category' ) == $product_cat->term_id ? 'selected' : '';
-
-				echo '<option value="' . esc_attr( $product_cat->term_id ) . '" ' . esc_attr( $selected ) . '>' . esc_attr( $product_cat->name ) . '</option>';
-			}
-		echo '</td></tr>';
-
-		/**
-		 * row for: sale percent
-		 */
-		echo '<tr>';
-		echo '<th scope="row">Sale percent</th>';
-		echo '<td>';
-		Qreuz_Admin::load_helptip(
-			'Set a discount percentage that will be used to calculate the sale price for products in the sale category.'
-		);
-		echo '<input type="text" name="qreuz_smart_pricing_sale_percent" value="' . esc_attr( get_option( 'qreuz_smart_pricing_sale_percent' ) ) . '" />';
-		echo '<span class="qreuz_admin_unit">%</span>';
-		echo '</td></tr>';
-
-		/**
-		 * row for: price scheme
-		 */
-		$price_schemes =
-			array(
-				'0.99',
-				'0.98',
-				'0.95',
-				'0.90',
-				'0.50',
-				'0.00',
-			);
-		echo '<tr>';
-		echo '<th scope="row">Price scheme</th>';
-		echo '<td>';
-		Qreuz_Admin::load_helptip(
-			'Define a store wide price scheme that will be used for all prices in your shop. This setting will override prices specified elsewhere and round up to match the scheme.'
-		);
-		echo '<select name="qreuz_smart_pricing_price_scheme">';
-		echo '<option value="">' . esc_attr( __( '- none', 'qreuz' ) ) . '</option>';
-			foreach ( $price_schemes as $price_scheme ) {
-
-				$selected = get_option( 'qreuz_smart_pricing_price_scheme' ) === $price_scheme ? 'selected' : '';
-
-				echo '<option value="' . esc_attr( $price_scheme ) . '" ' . esc_attr( $selected ) . '>' . esc_attr( $price_scheme ) . '</option>';
-			}
-		echo '</td></tr>';
-
-		echo '</table>';
-
-		submit_button();
-		echo '</form>';
-		echo '</div>'; // close qreuz_admin_section
-
-		/**
-		 * Section: Set prices per WooCommerce product category
-		 */
-		echo '<div class="qreuz_admin_section">';
-		echo '<h2>Set prices per WooCommerce product category';
-		Qreuz_Admin::load_helptip(
-			'In this section, you can set prices per WooCommerce product category. Prices set here will be applied to all products in the selected category.'
-		);
-		echo '</h2>';
-		echo '<form method="post" action="' . esc_attr( admin_url( 'admin-post.php' ) ) . '">';
-		echo '<input type="hidden" name="action" value="' . esc_attr( $this->qreuz_wp_admin_page ) . '">';
-		echo '<input type="hidden" name="' . esc_attr( $this->qreuz_wp_admin_page ) . '" value="true">';
-		wp_nonce_field( $this->qreuz_wp_admin_page, $this->qreuz_wp_admin_page . '_nonce', false );
-		echo '<input type="hidden" name="_wp_http_referer" value="' . esc_attr( $redirect ) . '">';		
-		echo '<table class="form-table qreuz_admin_smart_pricing">';
-		echo '<tbody>';
-		foreach ( $product_cats as $cats_obj ) {
-			$db_row = Qreuz_Database::get_row( 'smart_pricing_prices', 'cat_id', $cats_obj->term_id ) ?: false;
-
-			if ( $db_row && '0.00' !== $db_row->price ) {
-				$price = $db_row->price;
-			} else {
-				$price = '';
-			}
-
-			echo '<tr><th scope="row">
-				<label for="qreuz_smart_price_cat_' . esc_attr( $cats_obj->slug ) . '">' . esc_attr( $cats_obj->name ) . '</label>
-			<td data-title="' . esc_attr( $cats_obj->name ) . '">
-				<input id="qreuz_smart_price_cat_' . esc_attr( $cats_obj->term_id ) . '" name="qreuz_smart_price_cat_' . esc_attr( $cats_obj->term_id ) . '" class="regular-text" type="text" value="' . $price . '"></input>
-				<span class="qreuz_form_currency_symbol">' . esc_attr( get_woocommerce_currency_symbol() ) . '</span>
-				</td>
-				</tr>';
-		}
-
-		echo '</table>';
-		submit_button();
-		echo '</form>';
-		echo '</div>'; // close qreuz_admin_section
-
-	}
-
-	/**
-	 * loading the page smart tracking
-	 * @param string $redirect
-	 * @return void 
-	 */
-	private function load_page_smart_tracking( $redirect ) {
-
-		/**
-		 * row: login required
-		 */
-		if ( '1' !== get_option( 'qreuz_userdata_authentification' ) ) {
-
-			$baseurl = remove_query_arg( 'notice', esc_url_raw( $_SERVER['REQUEST_URI'] ) );
-			
-			echo '<p id="qreuz_logged_in_required">';
-			echo '<a href="' . esc_attr( add_query_arg( 'page', 'qreuz', $baseurl ) ) . '" class="qreuz_to_login">Click here to authenticate.</a><br /><br />';
-			echo '<a href="https://qreuz.com/account" target="_blank">No account yet? Get started now!</a>';
-			echo '</p>';
-
-		}
-
-		echo '<div class="qreuz_admin_section" id="qreuz_smart_tracking">';
-
-		/**
-		 * Tracking settings
-		 */
-		echo '<h2>Tracking settings</h2>';
-
-		echo '<form method="post" action="options.php" class="qreuz_smart_tracking_form">';
-		settings_fields( 'qreuz_smart_tracking' );
-		do_settings_sections( 'qreuz_smart_tracking' );
-		echo '<table class="form-table qreuz_admin_smart_tracking">';
-		echo '<tbody>';
-
-		echo '<tr>';
-		echo '<th scope="row">Activate tracking</th>';
-		echo '<td>';
-		Qreuz_Admin::load_helptip(
-			'Activate tracking with Qreuz.'
-		);
-		
-		echo '<input type="checkbox" name="qreuz_smart_tracking_active" ' . ( 'on' === get_option( 'qreuz_smart_tracking_active' ) ? 'checked' : '' ) . ' />';
-		echo '</td></tr>';
-
-		echo '<tr>';
-		echo '<th scope="row">Low budget tracking</th>';
-		echo '<td>';
-		Qreuz_Admin::load_helptip(
-			'We do not recommend this feature for most users. Activate this if you are on a low performance server. This feature will reduce server load and implement tracking on the front end.'
-		);
-		
-		echo '<input type="checkbox" name="qreuz_smart_tracking_low_performance" ' . ( 'on' === get_option( 'qreuz_smart_tracking_low_performance' ) ? 'checked' : '' ) . ' />';
-		echo '</td></tr>';
-
-		echo '</table>';
-
-		submit_button();
-		echo '</form>';
-
-		echo '</div>'; // close qreuz_admin_section
-
-	}
-
-	/**
-	 * loading the preheader
-	 * @param void
-	 * @return void
-	 */
-	public function load_pageblock_preheader() {
+	private function load_pageblock_preheader() {
 
 		echo "<div class='wrap qreuz-wrapper qreuz'>";
-
 	}
 
 	/**
-	 * loading the page header
+	 * Loading the page header.
+	 * 
 	 * @param string $page
 	 * @return void
 	 */
@@ -409,35 +98,12 @@ class Qreuz_Admin_Tabs {
 
 		echo '<div class="qreuz_admin_header">';
 
-		echo '<h1><img src="' . esc_attr( plugins_url( 'qreuz/assets/img/qreuz-full-white.svg' ) ) . '" alt="Qreuz" /></h1>';
-
-		echo '<div class="qreuz_admin_navigation nav-tab-wrapper">';
-
-		$nav_items = [
-			'qreuz'                     => ( '1' === get_option( 'qreuz_userdata_authentification' ) ? 'Account' : 'Login' ),
-			'qreuz_menu_smart_tracking' => 'Tracking',
-			'qreuz_menu_smart_pricing'  => 'Smart pricing',
-		];
-
-		foreach ( $nav_items as $nav_slug => $nav_title ) {
-
-			$nav_tab_is_active = $nav_slug === $page ? 'nav-tab-active' : '';
-			echo '<span><a href="' . esc_attr( add_query_arg( 'page', $nav_slug, $baseurl ) ) . '" class="nav-tab ' . esc_attr( $nav_tab_is_active ) . '">' . esc_html( $nav_title ) . '</a></span>';
-
-		}
-
-		echo '</div>';
-
-		echo '<h2><span>' . esc_attr( get_admin_page_title() ) . '</span></h2>';
-
-		echo '</div>';
-
-		echo '<div class="qreuz_admin_left">';
-
+		echo '<h1><svg version="1.1" style="width:100px;height:50px;margin:0 0 0 1em;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"width="2529.497px" height="590.599px" viewBox="448.818 1122.05 2529.497 590.599"enable-background="new 448.818 1122.05 2529.497 590.599" xml:space="preserve"><g id="Layer_1"><path fill="#FFFFFF" d="M2282.472,1712.6c-127.787-0.156-231.34-103.709-231.496-231.496v-344.881c0-7.828,6.346-14.174,14.173-14.174h94.488c7.828,0,14.174,6.346,14.174,14.174v344.881c0,60.013,48.648,108.662,108.661,108.662c60.012,0,108.661-48.649,108.661-108.662v-344.881c0-7.828,6.346-14.174,14.174-14.174h94.488c7.827,0,14.172,6.346,14.172,14.174v344.881C2513.811,1608.891,2410.258,1712.444,2282.472,1712.6z"/><path fill="#FFFFFF" d="M1596.33,1712.6c-7.828,0-14.173-6.345-14.173-14.173v-562.204c0-7.828,6.345-14.174,14.173-14.174h387.401c7.827,0,14.173,6.346,14.173,14.174v94.487c0,7.828-6.346,14.174-14.173,14.174h-278.739v111.023h278.739c7.827,0,14.173,6.346,14.173,14.173v94.488c0,7.828-6.346,14.174-14.173,14.174h-278.739v111.023h278.739c7.827,0,14.173,6.346,14.173,14.173v94.488c0,7.828-6.346,14.173-14.173,14.173H1596.33z"/><path fill="#FFFFFF" d="M820.252,1712.6c-5.252-0.006-10.069-2.914-12.52-7.559L684.33,1472.129c-3.652-6.924-1.002-15.497,5.922-19.149c2.033-1.073,4.298-1.636,6.598-1.639h106.3c5.241-0.003,10.056,2.886,12.52,7.512l33.496,62.646c16.212-24.613,24.853-53.44,24.851-82.914v-42.52c0-83.495-67.687-151.181-151.182-151.181s-151.181,67.686-151.181,151.181v42.52c0.169,59.107,34.645,112.738,88.347,137.434c2.836,1.308,5.162,3.517,6.613,6.283l57.496,109.229c3.653,6.923,1.002,15.496-5.921,19.149c-2.034,1.073-4.299,1.635-6.599,1.638h-0.614c-146.726-6.015-262.483-126.883-262.157-273.732v-42.52c0-151.335,122.682-274.016,274.016-274.016c151.335,0,274.016,122.681,274.016,274.016v42.52c-0.072,75.487-31.283,147.602-86.268,199.323l28.347,53.905c3.653,6.923,1.002,15.497-5.921,19.149c-2.049,1.081-4.33,1.644-6.646,1.638H820.252z"/><path fill="#FFFFFF" d="M1408.819,1712.6c-5.252-0.006-10.069-2.914-12.52-7.559l-119.103-226.299h-114.142v219.685c0,7.828-6.346,14.173-14.174,14.173h-94.488c-7.827,0-14.173-6.345-14.173-14.173v-562.204c0-7.828,6.346-14.174,14.173-14.174h270.473c98.473-0.085,178.368,79.674,178.453,178.146c0.058,67.189-37.662,128.707-97.571,159.129l122.362,232.535c3.653,6.924,1.002,15.497-5.921,19.15c-2.034,1.073-4.299,1.635-6.599,1.638L1408.819,1712.6z M1324.865,1355.908c30.658,0,55.512-24.854,55.512-55.512s-24.854-55.512-55.512-55.512h-161.811v111.023H1324.865z"/><path fill="#FFFFFF" d="M2964.141,1122.05h-383.764c-7.828,0-14.174,6.346-14.174,14.174v94.487c0,7.828,6.346,14.174,14.174,14.174h241.37l-252.851,347.669c-1.751,2.419-2.693,5.329-2.693,8.315v97.559c0,7.828,6.346,14.173,14.174,14.173h201.768v-122.834h-59.326l252.803-347.622c1.751-2.419,2.693-5.329,2.693-8.315v-97.605C2978.315,1128.395,2971.969,1122.05,2964.141,1122.05z"/><path fill="#FFFFFF" d="M2869.653,1589.721h94.488c7.828,0,14.174,6.348,14.174,14.177v94.523c0,7.831-6.346,14.179-14.174,14.179h-94.488c-7.828,0-14.174-6.348-14.174-14.179v-94.523C2855.479,1596.069,2861.824,1589.721,2869.653,1589.721z"/><path fill="#FFFFFF" d="M2698.653,1589.721h94.488c7.828,0,14.174,6.348,14.174,14.177v94.523c0,7.831-6.346,14.179-14.174,14.179h-94.488c-7.828,0-14.174-6.348-14.174-14.179v-94.523C2684.479,1596.069,2690.824,1589.721,2698.653,1589.721z"/></g></svg></h1>';
 	}
 
 	/**
-	 * loading the description block
+	 * Loading the description block.
+	 * 
 	 * @param string $text
 	 * @return void
 	 */
@@ -452,13 +118,23 @@ class Qreuz_Admin_Tabs {
 
 			echo '</p>';
 			echo '</div>';
-
 		}
-
 	}
 
 	/**
-	 * loading the page footer
+	 * Loading the main content block.
+	 * 
+	 * @param void
+	 * @return void
+	 */
+	private function load_pageblock_content() {
+
+		echo '<div id="qreuz_admin_pb_content"></div>';
+	}
+
+	/**
+	 * Loading the page footer.
+	 * 
 	 * @param void
 	 * @return void
 	 */
@@ -466,7 +142,7 @@ class Qreuz_Admin_Tabs {
 
 		echo '<div class="qreuz_admin_footer">';
 		echo '<p>';
-		echo '<a href="https://qreuz.com" target="_blank" style="text-decoration:none;">Qreuz</a>. Made with passion in Berlin.';
+		echo '<a href="https://qreuz.com" target="_blank" style="text-decoration:none;">Qreuz</a>. Data your business.';
 		echo '</p>';
 		echo '</div>';
 
@@ -475,132 +151,68 @@ class Qreuz_Admin_Tabs {
 	}
 
 	/**
-	 * loading the sidebar
-	 * @param string $page
-	 * @return void
-	 */
-	private function load_pageblock_sidebar( $page ) {
-
-		echo '</div>'; // closing qreuz_admin_left
-
-		switch ( $page ) {
-			case 'qreuz_menu_smart_pricing':
-				$content = '<h3>Qreuz Smart Pricing</h3><p>Qreuz Smart Pricing helps you to optimize your prices across your WooCommerce store.<br />
-				The plugin will automatically adjust and override existing prices across your WooCommerce products based on the following settings.<br />
-				Leave empty to not set a price for a product category.</p>';
-				break;
-			case 'qreuz_menu_smart_tracking':
-				$content = '<h3>Qreuz Smart Tracking</h3><p>Qreuz Smart Tracking helps you to analyze user behavior on your Wordpress Website.</p>
-				<p>This tracking can replace other integrations with tracking providers and works <b>without cookies</b>.</p>
-				<p>Activate and manage your integrations directly from your <a href="https://qreuz.com/account/" target="_blank">Qreuz user account</a>.</p>
-				<h3>Features</h3>
-				<ul class="qreuz_admin_features">
-					
-					<li>
-					<b>Integration with ad networks</b>
-						<ul>
-							<li>Connect your data with your favorite tools and platforms</li>
-							<li>Integration with Google Analytics</li>
-							<li>Integration with Google Ads</li>
-							<li>Integration with Google Merchant Center</li>
-							<li>Integration with Facebook Ads</li>
-							<li>Integration with Bing Ads</li>
-						</ul>
-					</li>
-					
-					<li>
-					<b>Optimize your page speed</b>
-						<ul>
-							<li>Replaces your existing tracking integrations</li>
-							<li>Lightweight and optimized tracking</li>
-							<li>Reduces page load on the frontend</li>
-						</ul>
-					</li>
-					
-					<li>
-					<b>Integration with WooCommerce</b>
-						<ul>
-							<li>Activated automatically if you use WooCommerce</li>
-							<li>Track your orders</li>
-							<li>identify successful campaigns</li>
-							<li>understand product performance</li>
-						</ul>
-					</li>
-				</ul>
-				';
-				break;
-			default:
-				$content = '<h3>Qreuz</h3>
-				<p>Connect with your account at Qreuz for access to advanced tracking and automation features of this plugin.<br />
-				<h4>No account yet?</h4>
-				<a href="https://qreuz.com/account/" target="_blank"">Get started now!</a>
-				</p>';
-		}
-
-		echo '<div class="qreuz_admin_sidebar">';
-		echo '<p>';
-
-		echo $content;
-
-		echo '</p>';
-		echo '</div>';
-
-	}
-
-	/**
-	 * loading admin notices
+	 * Loading admin notices.
+	 * 
 	 * @param void
 	 * @return void
 	 */
 	public function admin_notice_construct() {
 
-		if ( isset( $_GET['notice'] ) ) {
-			switch ( sanitize_text_field( $_GET['notice'] ) ) {
-				case ( 'saved' ):
-					$notice = 'Saved';
-					$type   = 'notice-success';
-					break;
-				case ( 'deleted' ):
-					$notice = 'Deleted';
-					$type   = 'notice-warning';
-					break;
-				case ( 'failed' ):
-					$notice = 'Failed';
-					$type   = 'notice-error';
-					break;
-				case ( 'info' ):
-					$notice = 'INFO';
-					$type   = 'notice-info';
-					break;
-				default:
-					$notice = false;
-			}
-		} elseif ( isset( $_GET['settings-updated'] ) ) {
-			switch ( sanitize_text_field( $_GET['settings-updated'] ) ) {
-				case ( 'true' ):
-					$notice = 'Saved';
-					$type   = 'notice-success';
-					break;
-				default:
-					$notice = false;
-			}
-		} else {
-			return;
-		}
+		if ( ! current_user_can( 'manage_options' ) ) {
 
-		if ( $notice ) {
-			add_action(
-				'all_admin_notices',
-				function() use ( $notice, $type ) {
-					$this->admin_notice_render( $notice, $type );
-				},
-				10
-			);
+			return;
+			
+		} else {
+			
+			if ( isset( $_GET['notice'] ) ) {
+				switch ( sanitize_text_field( $_GET['notice'] ) ) {
+					case ( 'saved' ):
+						$notice = 'Saved';
+						$type   = 'notice-success';
+						break;
+					case ( 'deleted' ):
+						$notice = 'Deleted';
+						$type   = 'notice-warning';
+						break;
+					case ( 'failed' ):
+						$notice = 'Failed';
+						$type   = 'notice-error';
+						break;
+					case ( 'info' ):
+						$notice = 'INFO';
+						$type   = 'notice-info';
+						break;
+					default:
+						$notice = false;
+				}
+			} elseif ( isset( $_GET['settings-updated'] ) ) {
+				switch ( sanitize_text_field( $_GET['settings-updated'] ) ) {
+					case ( 'true' ):
+						$notice = 'Saved';
+						$type   = 'notice-success';
+						break;
+					default:
+						$notice = false;
+				}
+			} else {
+				return;
+			}
+	
+			if ( $notice ) {
+				add_action(
+					'all_admin_notices',
+					function() use ( $notice, $type ) {
+						$this->admin_notice_render( $notice, $type );
+					},
+					10
+				);
+			}
 		}
 	}
 
 	/**
-	 * rendering admin notices
+	 * Rendering admin notices.
+	 * 
 	 * @param string $notice
 	 * @param string $type
 	 * @return void
@@ -612,50 +224,5 @@ class Qreuz_Admin_Tabs {
 
 	}
 
-	/**
-	 * processing forms on the backend
-	 * @param void
-	 * @return void
-	 */
-	public function process_form() {
-		
-		if ( ! wp_verify_nonce( sanitize_text_field( $_POST[ $this->qreuz_wp_admin_page . '_nonce' ] ), $this->qreuz_wp_admin_page ) || ! current_user_can( 'manage_options' ) ) {
-			wp_die();
-		}
-
-		if ( isset( $_POST[ $this->qreuz_wp_admin_page ] ) ) {
-
-			$price_array = array();
-
-			$input_class = 'qreuz_smart_price_cat_';
-			$input_class_len = strlen( $input_class );
-			foreach ( $_POST as $name => $value ) {
-				if ( substr( $name, 0, $input_class_len ) === $input_class ) {
-					$cat_id = substr( $name, $input_class_len, strlen( $name ) - $input_class_len );
-					
-					$value = sanitize_text_field( $value );
-
-					$price_array[ $cat_id ] = '' !== $value ? $value : null;
-				}
-			}
-			
-			/** store updated prices to database */
-			Qreuz_Database::insert_data_2col( 'smart_pricing_prices', $price_array, 'cat_id', 'price' );
-			
-			$notice = 'saved';
-
-		} else {
-			$notice = 'failed';
-		}
-
-		if ( ! isset( $_POST['_wp_http_referer'] ) ) {
-			wp_die( 'I am feeling puzzled. Missing redirect target?!' );
-		}
-
-		$url = add_query_arg( 'notice', $notice, urldecode( esc_url_raw( $_POST['_wp_http_referer'] ) ) );
-
-		wp_safe_redirect( $url );
-
-		exit;
-	}
+	// End class.
 }

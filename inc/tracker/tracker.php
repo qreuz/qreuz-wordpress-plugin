@@ -1,18 +1,14 @@
 <?php
 /** Qreuz plugin for WordPress.
-
 Copyright (C) 2020 by Qreuz GmbH <https://qreuz.com/legal-notice>
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
-
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
-
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 **/
@@ -31,7 +27,7 @@ class Qreuz_Tracker {
 
 	public function qreuz_track_pageview() {
 		
-		if ( ! check_ajax_referer( 'do-ajax-qtpv', 'qreuznonce', false ) ) {
+		if ( ! check_ajax_referer( 'do-ajax-qtpv', '_wpnonce', false ) ) {
 			
 			wp_die( 'nonce_failed' );
 
@@ -40,9 +36,8 @@ class Qreuz_Tracker {
 			$url = esc_url_raw( $_POST['url'] );
 			$ref = esc_url_raw( $_POST['ref'] );
 
-			$this->tracking_parameters['qtt'] = 'hit';
 			$this->qreuz_prepare_request( $url, $ref );
-			$this->qreuz_tracker_push( $this->tracking_parameters );
+			$this->qreuz_tracker_push( $this->tracking_parameters, 'hit' );
 			$this->tracking_parameters = array();
 
 			return;
@@ -51,18 +46,16 @@ class Qreuz_Tracker {
 
 	public function qreuz_prepare_request( $url = null, $ref = null ) {
 
-		$qreuz_ga_request_data = new Qreuz_Tracking_Datapoints();
-
-		$this->tracking_parameters['qturl']  = ( isset( $url ) ? $url : $qreuz_ga_request_data->qreuz_tdp_url() );
-		$this->tracking_parameters['qua']    = $qreuz_ga_request_data->qreuz_tdp_user_agent();
+		$this->tracking_parameters['qturl']  = ( isset( $url ) ? $url : Qreuz_Tracking_Datapoints::qreuz_tdp_url() );
+		$this->tracking_parameters['qua']    = Qreuz_Tracking_Datapoints::qreuz_tdp_user_agent();
 		
-		$uip = $qreuz_ga_request_data->qreuz_tdp_ip();
+		$uip = Qreuz_Tracking_Datapoints::qreuz_tdp_ip();
 
 		$this->tracking_parameters['quaip']   = $uip['aip'];
 		$this->tracking_parameters['quhip']   = $uip['hip'];
 		$this->tracking_parameters['aip']    = '1';
-		$this->tracking_parameters['qtref']  = ( isset( $ref ) ? $ref : $qreuz_ga_request_data->qreuz_tdp_referrer() );
-		// $this->tracking_parameters     = $qreuz_ga_request_data->qreuz_tdp_custom_dimensions( $this->tracking_parameters );
+		$this->tracking_parameters['qtref']  = ( isset( $ref ) ? $ref : Qreuz_Tracking_Datapoints::qreuz_tdp_referrer() );
+		// $this->tracking_parameters     = Qreuz_Tracking_Datapoints::qreuz_tdp_custom_dimensions( $this->tracking_parameters );
 		$this->tracking_parameters['z']      = wp_rand();
 
 		/**
@@ -81,9 +74,12 @@ class Qreuz_Tracker {
 
 	}
 
-	public function qreuz_tracker_push( $tracking_data ) {
+	/**
+	 * 
+	 */
+	public function qreuz_tracker_push( $tracking_data, $type ) {
 
-		$qkey = get_option( 'qreuz_userdata_qkey' );
+		$qkey = get_option( 'qreuz_user_data_qkey' );
 
 		if ( false !== $qkey && 5 < strlen( $qkey ) ) {
 
@@ -97,21 +93,21 @@ class Qreuz_Tracker {
 				}
 			}
 
-			$tracking_url = array( 'https://ping.qreuz.com/?v=1&qkey=' . $qkey );
+			$tracking_url = array( 'http://ping.qreuz.com/v1/' . $type . '?qkey=' . $qkey );
 			foreach ( $tracking_url as $tracker_url ) {
 					$this->do_request( $tracker_url . $tracking_request_parameter, $tracking_data_encoded['qua'] );
 			}
-
 		}
 
 		return;
 	}
 
 	private function do_request( $url, $user_agent_string ) {
+
 		$response = wp_remote_post(
 			$url,
 			array(
-				'method'       => 'POST',
+				'method'       => 'GET',
 				'timeout'      => 2,
 				'httpdversion' => '1.0',
 				'blocking'     => false,

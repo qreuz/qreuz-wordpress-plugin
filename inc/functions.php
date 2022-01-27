@@ -32,6 +32,7 @@ require QREUZ_PLUGINPATH . '/inc/integrations.php';
 require QREUZ_PLUGINPATH . '/admin/database/qreuz-database.php';
 require QREUZ_PLUGINPATH . '/inc/qreuz-smart-pricing.php';
 require QREUZ_PLUGINPATH . '/admin/qreuz-admin.php';
+//require QREUZ_PLUGINPATH . '/admin/qreuz-toolbox-woocommerce.php';
 
 
 /** table name handling for multisite */
@@ -47,27 +48,36 @@ if ( ! function_exists( 'qreuz_get_custom_table_name' ) ) {
 	}
 }
 
-/** initiate page view tracking */
-if ( 'on' === get_option( 'qreuz_smart_tracking_low_performance' ) ) {
+$visitor_tracking = array(
+	'active'          => get_option( 'qreuz_user_data_auth_status' ),
+	'tracking_method' => get_option( 'qreuz_tracking_method' ),
+);
+
+/**
+ * Initiate visitor tracking
+ */
+if ( 'frontend' === $visitor_tracking['tracking_method'] && '1' === $visitor_tracking['active'] ) {
+	/**
+	 * Load low budget tracker if selected.
+	 */
 
 	/** load low performance tracker instance */
 	add_action( 'wp_footer', 'qreuz_v2' );
 
 	function qreuz_v2() {
 
-		echo "<img src=\"https://ping.qreuz.com/?v=2\" id=\"qreuz-v2\" />
+		$qkey = get_option( 'qreuz_user_data_qkey' );
+		echo "<img src=\"\" id=\"qreuz-v2\" />
 		<script>
-		var qreuzQueryString = location.search;
-		while( qreuzQueryString.charAt(0) === '?' ) {
-			qreuzQueryString.substr(1);
-		}
-		document.getElementById('qreuz-v2').src += '&qtref=' + encodeURIComponent(document.referrer) + qreuzQueryString;
+		document.getElementById('qreuz-v2').src = 'https://ping.qreuz.com/v2/hit?qkey=" . $qkey . "&qtref=' + encodeURIComponent(document.referrer);
 		</script>
 	";
 
 	}
-
-} else {
+} elseif ( 'enhanced' === $visitor_tracking['tracking_method'] && '1' === $visitor_tracking['active'] ) {
+	/**
+	 * Load regular tracker.
+	 */
 
 	/** load standard tracker instance */
 	add_action( 'wp_enqueue_scripts', 'qreuz_main_js_load', 10 );
@@ -76,20 +86,24 @@ if ( 'on' === get_option( 'qreuz_smart_tracking_low_performance' ) ) {
 
 		wp_enqueue_script(
 			'qreuz_main_js',
-			QREUZ_PLUGINURL . 'assets/js/main.js',
-			[
-				'jquery',
-			],
+			QREUZ_PLUGINURL . 'dist/qreuz.min.js',
+			array(
+				'wp-element',
+			),
 			QREUZ_PLUGINVERSION,
 			true
 		);
 
 		wp_localize_script(
 			'qreuz_main_js',
-			'QreuzAjax',
+			'qreuzEnv',
 			array(
-				'ajaxurl'    => admin_url( 'admin-ajax.php' ),
-				'qreuznonce' => wp_create_nonce( 'do-ajax-qtpv' ),
+				'_wp_ajax_url'     => admin_url( 'admin-ajax.php' ),
+				'_wpnonce'         => wp_create_nonce( 'do-ajax-qtpv' ),
+				'_wp_http_referer' => wp_get_referer(),
+				'baseurl'          => get_bloginfo( 'wpurl' ),
+				'basepath'         => parse_url( get_bloginfo( 'wpurl' ), PHP_URL_PATH ),
+				'public_path'      => QREUZ_PLUGINURL . '/dist/',
 			)
 		);
 

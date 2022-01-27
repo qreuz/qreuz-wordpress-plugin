@@ -82,17 +82,16 @@ class Qreuz_WooCommerce_Tracking {
 			/** add transaction data to array for ecommerce tracking */
 			$this->transaction_data['qtno'] = $order_number;
 			$this->transaction_data['qa']   = get_bloginfo( 'name' );
-			$this->transaction_data['qtv']  = $order_total;
+			$this->transaction_data['qtv']  = round( $order_total );
 			$this->transaction_data['qtx']  = $order_total_tax;
 			$this->transaction_data['qts']  = $order_shipping_total;
 
 			/** add line item data to array for ecommerce tracking */
-			$order_line_items = $order->get_items();
 
 			$i = 1;
-			foreach ( $order_line_items as $item ) {
+			foreach ( $order->get_items() as $item ) {
 
-				$product = $order->get_product_from_item( $item );
+				$product = $item->get_product();
 
 				$this->transaction_data[ 'qtpr' . $i . 'id' ] = $product->get_sku();
 				$this->transaction_data[ 'qtpr' . $i . 'nm' ] = $product->get_name();
@@ -101,7 +100,7 @@ class Qreuz_WooCommerce_Tracking {
 				$i++;
 			}
 
-			$this->transaction_data['qtprc'] = $i-1;
+			$this->transaction_data['qtprc'] = $i - 1;
 
 			/** add product data to event action / label / value */
 			// $event_label = $order_number;

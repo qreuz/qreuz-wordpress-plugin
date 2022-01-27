@@ -31,74 +31,81 @@ class Qreuz_Admin_Metabox_Order {
 	 * @return void
 	 */
 	public function qreuz_admin_metabox_order_constructor( $order ) {
-		echo '<div class="qreuz">';
 
-		$customer_email = $order->get_billing_email();
+		if ( ! current_user_can( 'manage_options' ) ) {
 
-		if ( isset( $customer_email ) && '' !== $customer_email ) {
-			$customer_orders = $this->get_order_by_email( $customer_email );
+			return;
+			
 		} else {
-			$customer_orders = null;
-		}
 
-		
+			echo '<div class="qreuz">';
 
-		/**
-		 * get customer order count
-		 */
-		$customer_order_count = count( $customer_orders );
+			$customer_email = $order->get_billing_email();
 
-		/**
-		 * get customer total revenue and count completed orders
-		 */
-		$customer_total_revenue = 0;
-		$customer_order_count_completed = 0;
-
-		foreach ( $customer_orders as $customer_order ) {
-			if ( 'wc-completed' === $customer_order->post_status ) {
-
-				$new_order = wc_get_order( $customer_order->ID );
-
-				$customer_total_revenue += $new_order->get_total();
-
-				$customer_order_count_completed++;
-
+			if ( isset( $customer_email ) && '' !== $customer_email ) {
+				$customer_orders = $this->get_order_by_email( $customer_email );
+			} else {
+				$customer_orders = null;
 			}
-		}
 
-		/**
-		 * Section: customer insights
-		 */
-		echo '<h4>Customer insights';
-		Qreuz_Admin::load_helptip( 'Customer insights data is based on all orders in your store made with the same email address.', 'thin' );
-		echo '</h4>';
-		echo '<p class="qreuz_admin_metabox_customerinsights">';
+			
 
-		echo '<span>';
-		echo 'Customer: <b>' . sanitize_email( $customer_email ) . '</b>';
-		echo '</span>';
+			/**
+			 * get customer order count
+			 */
+			$customer_order_count = count( $customer_orders );
 
-		echo '<span>';
-		echo 'Orders placed: ' . esc_html( $customer_order_count );
-		// Qreuz_Admin::load_helptip( 'Only counting WooCommerce orders with status "completed".', 'thin' );
-		echo '</span>';
+			/**
+			 * get customer total revenue and count completed orders
+			 */
+			$customer_total_revenue = 0;
+			$customer_order_count_completed = 0;
 
-		echo '<span>';
-		echo 'Orders completed: ' . esc_html( $customer_order_count_completed );
-		// Qreuz_Admin::load_helptip( 'Only counting WooCommerce orders with status "completed".', 'thin' );
-		echo '</span>';
+			foreach ( $customer_orders as $customer_order ) {
+				if ( 'wc-completed' === $customer_order->post_status ) {
 
-		if ( 0 < $customer_total_revenue ) {
+					$new_order = wc_get_order( $customer_order->ID );
+
+					$customer_total_revenue += $new_order->get_total();
+
+					$customer_order_count_completed++;
+
+				}
+			}
+
+			/**
+			 * Section: customer insights
+			 */
+			echo '<h4>Customer insights';
+			//Qreuz_Admin::load_helptip( 'Customer insights data is based on all orders in your store made with the same email address.', 'thin' );
+			echo '</h4>';
+			echo '<p class="qreuz_admin_metabox_customerinsights">';
+
 			echo '<span>';
-			$customer_total_revenue = number_format( (float) $customer_total_revenue, 2, wc_get_price_decimal_separator(), '' );
-			echo 'Total revenue: ' . esc_html( $customer_total_revenue ) . esc_attr( get_woocommerce_currency_symbol() );
+			echo 'Customer: <b>' . sanitize_email( $customer_email ) . '</b>';
+			echo '</span>';
+
+			echo '<span>';
+			echo 'Orders placed: ' . esc_html( $customer_order_count );
 			// Qreuz_Admin::load_helptip( 'Only counting WooCommerce orders with status "completed".', 'thin' );
 			echo '</span>';
+
+			echo '<span>';
+			echo 'Orders completed: ' . esc_html( $customer_order_count_completed );
+			// Qreuz_Admin::load_helptip( 'Only counting WooCommerce orders with status "completed".', 'thin' );
+			echo '</span>';
+
+			if ( 0 < $customer_total_revenue ) {
+				echo '<span>';
+				$customer_total_revenue = number_format( (float) $customer_total_revenue, 2, wc_get_price_decimal_separator(), '' );
+				echo 'Total revenue: ' . esc_html( $customer_total_revenue ) . ( function_exists( 'get_woocommerce_currency' ) ? esc_attr( get_woocommerce_currency_symbol() ) : '' );
+				// Qreuz_Admin::load_helptip( 'Only counting WooCommerce orders with status "completed".', 'thin' );
+				echo '</span>';
+			}
+
+			echo '</p>'; // closing qreuz_admin_metabox_customerinsights
+			echo '</div>'; // closing the .qreuz element
 		}
-
-		echo '</p>'; // closing qreuz_admin_metabox_customerinsights
-		echo '</div>'; // closing the .qreuz element
-
 	}
 
 	/**
